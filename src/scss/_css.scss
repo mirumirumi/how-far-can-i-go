@@ -1,0 +1,63 @@
+/**
+ * vars
+ */
+$text:             #;
+$text_white:       #f2f2f2;
+$text_white_hover: #e3e3e3;
+$background:       #
+$primary:          #
+$primary_hover:    #
+
+
+/**
+ * globals
+ */
+body {
+  margin: 0;
+}
+a {
+  color: $text;
+}
+.button {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+  display: inline-block;
+  padding: 0.37rem 1.1rem 0.375rem;
+  text-align: center;
+  vertical-align: middle;
+  text-decoration: none;
+  border: 2.3px solid transparent;
+  border-radius: 4.4px;
+  background-color: transparent;
+  transition: all 0.07s ease-in;
+  cursor: pointer;
+  user-select: none;
+  &.fill {
+    color: $text_white;
+    border-color: $primary;
+    background-color: $primary;
+    &:hover {
+      color: text_white_hover;
+      border-color: $primary_hover;
+      background-color: $primary_hover;
+    }
+  }
+  &.outline {
+    color: $primary;
+    border-color: $primary;
+    &:hover {
+      opacity: 0.777;
+    }
+  }
+}
+
+
+/**
+ * responsive
+ */
+@mixin mobile {
+  @media screen and (max-width: 768px) {
+    @content;
+  }
+}
