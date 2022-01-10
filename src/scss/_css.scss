@@ -1,19 +1,20 @@
 /**
  * vars
  */
-$text:             #;
+$text:             #4e4e4e;
 $text_white:       #f2f2f2;
 $text_white_hover: #e3e3e3;
-$background:       #
-$primary:          #
-$primary_hover:    #
+$primary:          #ec6839;
+$primary_hover:    #e26234;
 
 
 /**
  * globals
  */
-body {
+html, body {
   margin: 0;
+  padding: 0;
+  height: 100%;
 }
 a {
   color: $text;
