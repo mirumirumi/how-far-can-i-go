@@ -4,12 +4,14 @@
 </template>
 
 <script setup lang="ts">
+import { inject, ref } from "vue"
 import { Loader } from "@googlemaps/js-api-loader"
 import { apiKey } from "@/secrets/secrets"
 import { LatLng, SystemThemeConfig } from "@/utils/defines"
 import { darkStyle } from "@/utils/darkStyle"
 
-const ZOOM = 13  // it's OK that constant value
+const toast: any = inject("toast")
+const ZOOM = 15  // it's OK that constant value
 const initialCenter = await getUserCurrentPosition()
 const loader = new Loader({
   apiKey: apiKey,
@@ -32,8 +34,8 @@ loader.load().then((google) => {
 });
 
 function getUserCurrentPosition(): Promise<LatLng> {
-    let msg = "Your device was unable to retrieve information about your current location."
-    if (!navigator.geolocation) toast.show("hey")
+    let msg = "Your device was not able to obtain information about your current location."
+    if (!navigator.geolocation) toast.error(msg)
   
     return new Promise<any>((resolve, reject) => {   // eslint-disable-line
       navigator.geolocation.getCurrentPosition((location) => {
@@ -46,19 +48,19 @@ function getUserCurrentPosition(): Promise<LatLng> {
         console.log(e.code);
         switch (e.code) {
           case 0:
-            msg += "The cause is unknown."
+            msg += "\nThe cause is unknown."
             break
           case 1:
-            msg += "The caluse is that location info acquisition was not allowed."
+            msg += "\nThe caluse is that location info acquisition was not allowed."
             break
           case 2:
-            msg += "The cause of this is due to signal conditions."
+            msg += "\nThe cause of this is due to signal conditions."
             break
           case 3:
-            msg += "This is a timeout error."
+            msg += "\nThis is a timeout error."
             break
         }
-        // msg.show
+        toast.error(msg)
         reject(getCountryDefaultPosition())
       }, { enableHighAccuracy: true })
     })
@@ -82,7 +84,6 @@ function getSystemThemeConfig(): SystemThemeConfig {
   return SystemThemeConfig.LIGHT
 }
 
-
 </script>
 
 <style lang="scss" scoped>
@@ -91,6 +92,9 @@ function getSystemThemeConfig(): SystemThemeConfig {
 }
 </style>
 <style lang="scss">
+.c-toast-container {
+  top: 4.44em;
+}
 .gmnoprint, .gm-style-cc {
   display: none !important;
 }
