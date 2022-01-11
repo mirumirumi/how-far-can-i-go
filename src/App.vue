@@ -1,6 +1,8 @@
 <template>
   <main class="view_wrap">
-    <router-view/>
+    <Suspense>
+      <router-view/>
+    </Suspense>
   </main>
   <TheFooter></TheFooter>
 </template>
