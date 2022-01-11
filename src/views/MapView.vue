@@ -1,6 +1,5 @@
 <template>
   <div id="map"></div>
-
 </template>
 
 <script setup lang="ts">
@@ -76,13 +75,14 @@ function getCountryDefaultPosition(): LatLng {
 }
 
 function shouldDarkMode(): boolean {
-  const config = getSystemThemeConfig()
-  return config != SystemThemeConfig.LIGHT ? true : false
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+  // const config = getSystemThemeConfig()
+  // return config != SystemThemeConfig.LIGHT ? true : false
 }
 
-function getSystemThemeConfig(): SystemThemeConfig {
-  return SystemThemeConfig.LIGHT
-}
+// function getSystemThemeConfig(): SystemThemeConfig {
+//   return SystemThemeConfig.LIGHT
+// }
 
 </script>
 
