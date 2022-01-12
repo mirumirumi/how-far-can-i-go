@@ -1,5 +1,28 @@
 <template>
   <div id="map"></div>
+  <div class="ui_wrap">
+    <div class="search">
+      <input type="text" id="search" class="input" autocomplete="off" placeholder="Search for...">
+      <SvgIcon icon="search"></SvgIcon>
+    </div>
+    <div class="transportation">
+      <button type="button" id="transportation" class="input select_button" @click="select(`tp`)">Walking</button>
+      <ul v-if="selectTp && backOpen">
+        <li value="walking">Walking</li>
+        <li value="cycling">Cycling</li>
+        <li value="driving">Driving</li>
+      </ul>
+    </div>
+    <div class="time">
+      <button type="button" id="time" class="input select_button" @click="select(`time`)">10 min</button>
+      <ul v-if="selectTime && backOpen">
+        <li v-for="i in 30" :value="i" :key="i">{{ i }} min</li>
+      </ul>
+    </div>
+  </div>
+  <teleport to="body">
+    <TransparentBack v-if="backOpen" @click="closeBack"></TransparentBack>
+  </teleport>
 </template>
 
 <script setup lang="ts">
@@ -8,9 +31,10 @@ import { Loader } from "@googlemaps/js-api-loader"
 import { apiKey } from "@/secrets/secrets"
 import { LatLng, SystemThemeConfig } from "@/utils/defines"
 import { darkStyle } from "@/utils/darkStyle"
+import TransparentBack from "@/components/modules/TransparentBack.vue"
+import SvgIcon from "@/components/parts/SvgIcon.vue"
 
 const toast: any = inject("toast")
-const ZOOM = 15  // it's OK that constant value
 const initialCenter = await getUserCurrentPosition()
 const loader = new Loader({
   apiKey: apiKey,
@@ -19,12 +43,12 @@ const loader = new Loader({
 
 loader.load().then((google) => {
   new google.maps.Map(document.getElementById("map") as HTMLElement, {
-    center: initialCenter,
-    zoom: ZOOM,
-    mapTypeControl: false,
+    center:            initialCenter,
+    zoom:              15,
+    mapTypeControl:    false,
     fullscreenControl: false,
     streetViewControl: false,
-    zoomControl: false,
+    zoomControl:       false,
     zoomControlOptions: {
       position: google.maps.ControlPosition.LEFT_BOTTOM,
     },
@@ -75,7 +99,7 @@ function getCountryDefaultPosition(): LatLng {
 }
 
 function shouldDarkMode(): boolean {
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
+  return !window.matchMedia("(prefers-color-scheme: dark)").matches
   // const config = getSystemThemeConfig()
   // return config != SystemThemeConfig.LIGHT ? true : false
 }
@@ -84,12 +108,140 @@ function shouldDarkMode(): boolean {
 //   return SystemThemeConfig.LIGHT
 // }
 
+const selectTp = ref(false)
+const selectTime = ref(false)
+const backOpen = ref(false)
+
+const select = (type: string) => {
+  if (!backOpen.value) {
+    // when closing
+    if (type === "tp")    selectTp.value   = true    
+    if (type === "time")  selectTime.value = true
+    backOpen.value = true
+  } else {
+    // when opening
+    if (type === "tp" && selectTp.value) {
+      selectTp.value = false
+      backOpen.value = false
+    }
+    if (type === "tp" && selectTime.value) {
+      selectTp.value   = true
+      selectTime.value = false
+    }
+    if (type === "time" && selectTp.value) {
+      selectTp.value   = false
+      selectTime.value = true
+    }
+    if (type === "time" && selectTime.value) {
+      selectTime.value = false
+      backOpen.value   = false
+    }
+  }
+}
+
+const closeBack = (() => {
+  selectTp.value = false
+  selectTime.value = false
+  backOpen.value = false
+})
+
+document.addEventListener("keydown", (e) => {
+  if (e.key == "Escape") {
+    closeBack()
+  }
+})
+
 </script>
 
 <style lang="scss" scoped>
 #map {
   height: 100%;
 }
+.ui_wrap {
+  position: absolute;
+  top: 2.3%;
+  left: 2%;
+  display: flex;
+  > * {
+    display: inline-block;
+    margin-right: 1.3em;
+    height: 46px;
+  }
+  .search {
+    position: relative;
+    input {
+      width: 275px;
+      font-weight: normal;
+    }
+    svg {
+      top: 0;
+      bottom: 0;
+      right: 1.5em;
+      margin: auto;
+      width: 1.3em;
+      cursor: pointer;
+    }
+  }
+  .transportation {
+    button {
+      width: 165px;
+      padding-left: 9px;
+      text-align: center;
+    }
+    li {
+      margin: 0.5em 0 0.5em;
+    }
+  }
+  .time {
+    button {
+      width: 150px;
+      padding-left: 9px;
+      text-align: center;
+    }
+  }
+  .transportation, .time {
+    z-index: 130;
+  }
+  .input {
+    min-width: 90px;
+    height: 46px;
+    padding-top: 2px;
+    padding-left: 1.9em;
+    padding-right: 1.3em;
+    font-size: 1.03em;
+    font-weight: 700;
+    color: #4e4e4e;
+    border: solid 0.333px #D9D9D9;
+    border-radius: 29px;
+    box-shadow: 2px 2px 4px 0px rgba($color: #000000, $alpha: 0.19);
+    appearance: none;
+  }
+  ul {
+    background-color: #fff;
+    margin: 0.3em auto 0;
+    padding: 0.5em 0;
+    width: 77%;
+    max-height: 250px;
+    border-radius: 5px;
+    box-shadow: 2px 2px 4px 0px rgba(0,0,0, 0.19);
+    overflow-y: auto;
+    li {
+      margin: 0.05em 0 0.05em;
+      text-align: center;
+      cursor: pointer;
+      &:hover {
+        background-color: #eaeaea;
+      }
+    }
+  }
+  .select_button {
+    background-color: #fff;
+    background-image: url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 16 16\'%3e%3cpath fill=\'none\' stroke=\'%23343a40\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M2 5l6 6 6-6\'/%3e%3c/svg%3e');
+    background-repeat: no-repeat;
+    background-position: right 0.77rem center;
+    background-size: 16px 12px;
+  }
+ }
 </style>
 <style lang="scss">
 .c-toast-container {
