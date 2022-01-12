@@ -8,20 +8,22 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+
 const p = defineProps<{
   icon: string,
 }>()
 
-let viewBox = "0 0 512 512"
+const viewBox = ref("0 0 512 512")
 switch (p.icon) {
   case "walking":
-    viewBox = "0 0 320 512"
+    viewBox.value = "0 0 320 512"
     break
   case "cycling":
-    viewBox = "0 0 640 512"
+    viewBox.value = "0 0 640 512"
     break
   case "driving":
-    viewBox = "0 0 640 512"
+    viewBox.value = "0 0 640 512"
     break
 }
 </script>

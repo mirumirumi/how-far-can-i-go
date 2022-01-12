@@ -6,5 +6,11 @@ export interface LatLng {
 export enum SystemThemeConfig {
   LIGHT = "light",
   DARK = "dark",
-  AUTO = "auto",
+  OS_Sync = "os",
+}
+
+export enum Transportation {
+  WALKING = "walking",
+  CYCLING = "cycling",
+  DRIVING = "driving",
 }

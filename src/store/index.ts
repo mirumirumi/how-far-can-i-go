@@ -1,21 +1,31 @@
 import { InjectionKey } from 'vue'
 import { createStore, Store, useStore as baseUseStore } from 'vuex'
+import { Transportation } from '@/utils/defines'
 
 export interface State {
-  like: number
+  query: string,
+  transportation: Transportation,
+  time: number,
 }
-
-// interface xxx {
-
-// }
 
 export const store = createStore<State>({
   state: {
-    like: 13,
+    query: "",
+    transportation: Transportation.WALKING,
+    time: 10,
   },
   getters: {
   },
   mutations: {
+    setQuery(state, query: string) {
+      state.query = query
+    },
+    setTransportation(state, tp: Transportation) {
+      state.transportation = tp
+    },
+    setTime(state, time: number) {
+      state.time = time
+    },
   },
   actions: {
   },
@@ -24,6 +34,6 @@ export const store = createStore<State>({
 })
 
 export const key: InjectionKey<Store<State>> = Symbol();
-export const useStore = () => {
+export const useStore = () => {  // eslint-disable-line
   return baseUseStore(key)
 }

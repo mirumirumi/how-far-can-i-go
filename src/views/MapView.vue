@@ -3,34 +3,37 @@
   <div class="ui_wrap">
     <div class="search">
       <input type="text" id="search" class="input" autocomplete="off" placeholder="Search for...">
-      <SvgIcon icon="search" /><!-- @click="geocode" -->
+      <SvgIcon icon="search" @click="geocode" />
     </div>
     <div class="transportation">
-      <button type="button" id="transportation" class="input select_button" @click="select(`tp`)">Walking</button>
-      <ul v-if="selectTp && backOpen">
-        <li value="walking">
+      <button type="button" id="transportation" class="input select_button" @click="select(`tp`)">
+        <SvgIcon :icon="store.state.transportation" />
+        {{ store.state.transportation.charAt(0).toUpperCase() + store.state.transportation.slice(1) }}
+      </button>
+      <ul v-if="selectingTp && isOpenBack">
+        <li @click="selectTp(`walking`)">
           <SvgIcon icon="walking" />
           Walking
         </li>
-        <li value="cycling">
+        <li @click="selectTp(`cycling`)">
           <SvgIcon icon="cycling" />
           Cycling
         </li>
-        <li value="driving">
+        <li @click="selectTp(`driving`)">
           <SvgIcon icon="driving" />
           Driving
         </li>
       </ul>
     </div>
     <div class="time">
-      <button type="button" id="time" class="input select_button" @click="select(`time`)">10 min</button>
-      <ul v-if="selectTime && backOpen">
-        <li v-for="i in 30" :value="i" :key="i">{{ i }} min</li>
+      <button type="button" id="time" class="input select_button" @click="select(`time`)" v-html="`${ store.state.time } min`"></button>
+      <ul v-if="selectingTime && isOpenBack">
+        <li v-for="i in 30" :value="i" :key="i" @click="selectTime(i)">{{ i }} min</li>
       </ul>
     </div>
   </div>
   <teleport to="body">
-    <TransparentBack v-if="backOpen" @click="closeBack" />
+    <TransparentBack v-if="isOpenBack" @click="closeSelections" />
   </teleport>
 </template>
 
@@ -42,7 +45,9 @@ import { LatLng, SystemThemeConfig } from "@/utils/defines"
 import { darkStyle } from "@/utils/darkStyle"
 import TransparentBack from "@/components/modules/TransparentBack.vue"
 import SvgIcon from "@/components/parts/SvgIcon.vue"
+import { useStore } from "@/store"
 
+const store = useStore()
 const toast: any = inject("toast") // eslint-disable-line
 const initialCenter = await getUserCurrentPosition()
 const loader = new Loader({
@@ -66,36 +71,36 @@ loader.load().then((google) => {
 });
 
 function getUserCurrentPosition(): Promise<LatLng> {
-    let msg = "Your device was not able to obtain information about your current location."
-    if (!navigator.geolocation) toast.error(msg)
-  
-    return new Promise<any>((resolve, reject) => {   // eslint-disable-line
-      navigator.geolocation.getCurrentPosition((location) => {
-        resolve({
-          lat: location.coords.latitude,
-          lng: location.coords.longitude,
-        })
-      }, (e) => {
-        msg = "Failed to get information about the current location."
-        console.log(e.code);
-        switch (e.code) {
-          case 0:
-            msg += "\nThe cause is unknown."
-            break
-          case 1:
-            msg += "\nThe caluse is that location info acquisition was not allowed."
-            break
-          case 2:
-            msg += "\nThe cause of this is due to signal conditions."
-            break
-          case 3:
-            msg += "\nThis is a timeout error."
-            break
-        }
-        toast.error(msg)
-        reject(getCountryDefaultPosition())
-      }, { enableHighAccuracy: true })
-    })
+  let msg = "Your device was not able to obtain information about your current location."
+  if (!navigator.geolocation) toast.error(msg)
+
+  return new Promise<any>((resolve, reject) => {   // eslint-disable-line
+    navigator.geolocation.getCurrentPosition((location) => {
+      resolve({
+        lat: location.coords.latitude,
+        lng: location.coords.longitude,
+      })
+    }, (e) => {
+      msg = "Failed to get information about the current location."
+      console.log(e.code);
+      switch (e.code) {
+        case 0:
+          msg += "\nThe cause is unknown."
+          break
+        case 1:
+          msg += "\nThe caluse is that location info acquisition was not allowed."
+          break
+        case 2:
+          msg += "\nThe cause of this is due to signal conditions."
+          break
+        case 3:
+          msg += "\nThis is a timeout error."
+          break
+      }
+      toast.error(msg)
+      reject(getCountryDefaultPosition())
+    }, { enableHighAccuracy: true })
+  })
 }
 
 function getCountryDefaultPosition(): LatLng {
@@ -121,49 +126,52 @@ const geocode = (() => {
   return
 })
 
-const selectTp = ref(false)
-const selectTime = ref(false)
-const backOpen = ref(false)
+const selectTp = ((type: string) => {
+  store.commit("setTransportation", type)
+  closeSelections()
+})
+const selectTime = ((time: number) => {
+  store.commit("setTime", time)
+  closeSelections()
+})
 
+const selectingTp = ref(false)
+const selectingTime = ref(false)
+const isOpenBack = ref(false)
 const select = (type: string) => {
-  if (!backOpen.value) {
-    // when closing
-    if (type === "tp")    selectTp.value   = true    
-    if (type === "time")  selectTime.value = true
-    backOpen.value = true
+  if (!isOpenBack.value) {
+    if (type === "tp")    selectingTp.value   = true    
+    if (type === "time")  selectingTime.value = true
+    isOpenBack.value = true
   } else {
-    // when opening
-    if (type === "tp" && selectTp.value) {
-      selectTp.value = false
-      backOpen.value = false
+    if (type === "tp" && selectingTp.value) {
+      selectingTp.value = false
+      isOpenBack.value = false
     }
-    if (type === "tp" && selectTime.value) {
-      selectTp.value   = true
-      selectTime.value = false
+    if (type === "tp" && selectingTime.value) {
+      selectingTp.value   = true
+      selectingTime.value = false
     }
-    if (type === "time" && selectTp.value) {
-      selectTp.value   = false
-      selectTime.value = true
+    if (type === "time" && selectingTp.value) {
+      selectingTp.value   = false
+      selectingTime.value = true
     }
-    if (type === "time" && selectTime.value) {
-      selectTime.value = false
-      backOpen.value   = false
+    if (type === "time" && selectingTime.value) {
+      selectingTime.value = false
+      isOpenBack.value   = false
     }
   }
 }
 
-const closeBack = (() => {
-  selectTp.value = false
-  selectTime.value = false
-  backOpen.value = false
+const closeSelections = (() => {
+  selectingTp.value = false
+  selectingTime.value = false
+  isOpenBack.value = false
 })
 
 document.addEventListener("keydown", (e) => {
-  if (e.key == "Escape") {
-    closeBack()
-  }
+  if (e.key == "Escape") closeSelections()
 })
-
 </script>
 
 <style lang="scss" scoped>
@@ -192,9 +200,15 @@ document.addEventListener("keydown", (e) => {
   }
   .transportation {
     button {
-      width: 165px;
-      padding-left: 9px;
+      position: relative;
+      width: 175px;
+      padding-left: 29px;
       text-align: center;
+      cursor: pointer;
+      svg {
+        left: 1.6em;
+        height: 1.1em;
+      }
     }
     li {
       padding-top: 0.5em;
@@ -208,9 +222,10 @@ document.addEventListener("keydown", (e) => {
   }
   .time {
     button {
-      width: 150px;
+      width: 140px;
       padding-left: 9px;
       text-align: center;
+      cursor: pointer;
     }
   }
   .transportation, .time {
@@ -233,7 +248,7 @@ document.addEventListener("keydown", (e) => {
   ul {
     background-color: #fff;
     margin: 0.3em auto 0;
-    padding: 0.5em 0;
+    padding: 0.4em 0 0.5em;
     width: 77%;
     max-height: 250px;
     border-radius: 5px;
