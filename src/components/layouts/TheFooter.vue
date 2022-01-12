@@ -10,8 +10,8 @@
 </script>
 
 <style scoped lang="scss">
-.footer_wrap {
-  footer {
-  }
-}
+// .footer_wrap {
+//   footer {
+//   }
+// }
 </style>

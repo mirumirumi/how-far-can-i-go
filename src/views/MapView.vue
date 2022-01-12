@@ -3,7 +3,7 @@
   <div class="ui_wrap">
     <div class="search">
       <input type="text" id="search" class="input" autocomplete="off" placeholder="Search for...">
-      <SvgIcon icon="search"></SvgIcon>
+      <SvgIcon icon="search" @click="geocoord"></SvgIcon>
     </div>
     <div class="transportation">
       <button type="button" id="transportation" class="input select_button" @click="select(`tp`)">Walking</button>
@@ -34,7 +34,7 @@ import { darkStyle } from "@/utils/darkStyle"
 import TransparentBack from "@/components/modules/TransparentBack.vue"
 import SvgIcon from "@/components/parts/SvgIcon.vue"
 
-const toast: any = inject("toast")
+const toast: any = inject("toast") // eslint-disable-line
 const initialCenter = await getUserCurrentPosition()
 const loader = new Loader({
   apiKey: apiKey,
@@ -107,6 +107,10 @@ function shouldDarkMode(): boolean {
 // function getSystemThemeConfig(): SystemThemeConfig {
 //   return SystemThemeConfig.LIGHT
 // }
+
+const geocoord = (() => {
+  return
+})
 
 const selectTp = ref(false)
 const selectTime = ref(false)
