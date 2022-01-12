@@ -10,7 +10,7 @@ export interface State {
 
 export const store = createStore<State>({
   state: {
-    query: "",
+    query: "walking",
     transportation: Transportation.WALKING,
     time: 10,
   },

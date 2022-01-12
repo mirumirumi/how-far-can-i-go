@@ -11,15 +11,15 @@
         {{ store.state.transportation.charAt(0).toUpperCase() + store.state.transportation.slice(1) }}
       </button>
       <ul v-if="selectingTp && isOpenBack">
-        <li @click="selectTp(`walking`)">
+        <li @click="selectTp(`walking`)" :class="{highlight: selected.includes(`walking`)}">
           <SvgIcon icon="walking" />
           Walking
         </li>
-        <li @click="selectTp(`cycling`)">
+        <li @click="selectTp(`cycling`)" :class="{highlight: selected.includes(`cycling`)}">
           <SvgIcon icon="cycling" />
           Cycling
         </li>
-        <li @click="selectTp(`driving`)">
+        <li @click="selectTp(`driving`)" :class="{highlight: selected.includes(`driving`)}">
           <SvgIcon icon="driving" />
           Driving
         </li>
@@ -28,7 +28,7 @@
     <div class="time">
       <button type="button" id="time" class="input select_button" @click="select(`time`)" v-html="`${ store.state.time } min`"></button>
       <ul v-if="selectingTime && isOpenBack">
-        <li v-for="i in 30" :value="i" :key="i" @click="selectTime(i)">{{ i }} min</li>
+        <li v-for="i in 30" :value="i" :key="i" @click="selectTime(i)" :class="{highlight: selected.includes(i)}">{{ i }} min</li>
       </ul>
     </div>
   </div>
@@ -126,11 +126,14 @@ const geocode = (() => {
   return
 })
 
+const selected = ref(["walking", 10])
 const selectTp = ((type: string) => {
+  selected.value[0] = type
   store.commit("setTransportation", type)
   closeSelections()
 })
 const selectTime = ((time: number) => {
+  selected.value[1] = time
   store.commit("setTime", time)
   closeSelections()
 })
@@ -256,7 +259,6 @@ document.addEventListener("keydown", (e) => {
     overflow-y: auto;
     li {
       position: relative;
-      margin: 0.05em 0 0.05em;
       text-align: center;
       cursor: pointer;
       &:hover {
@@ -270,6 +272,9 @@ document.addEventListener("keydown", (e) => {
     background-repeat: no-repeat;
     background-position: right 0.77rem center;
     background-size: 16px 12px;
+  }
+  .highlight {
+    background-color: #eaeaea;
   }
 }
 svg {
