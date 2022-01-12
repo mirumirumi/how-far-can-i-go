@@ -3,14 +3,23 @@
   <div class="ui_wrap">
     <div class="search">
       <input type="text" id="search" class="input" autocomplete="off" placeholder="Search for...">
-      <SvgIcon icon="search" @click="geocoord"></SvgIcon>
+      <SvgIcon icon="search" /><!-- @click="geocode" -->
     </div>
     <div class="transportation">
       <button type="button" id="transportation" class="input select_button" @click="select(`tp`)">Walking</button>
       <ul v-if="selectTp && backOpen">
-        <li value="walking">Walking</li>
-        <li value="cycling">Cycling</li>
-        <li value="driving">Driving</li>
+        <li value="walking">
+          <SvgIcon icon="walking" />
+          Walking
+        </li>
+        <li value="cycling">
+          <SvgIcon icon="cycling" />
+          Cycling
+        </li>
+        <li value="driving">
+          <SvgIcon icon="driving" />
+          Driving
+        </li>
       </ul>
     </div>
     <div class="time">
@@ -21,7 +30,7 @@
     </div>
   </div>
   <teleport to="body">
-    <TransparentBack v-if="backOpen" @click="closeBack"></TransparentBack>
+    <TransparentBack v-if="backOpen" @click="closeBack" />
   </teleport>
 </template>
 
@@ -108,7 +117,7 @@ function shouldDarkMode(): boolean {
 //   return SystemThemeConfig.LIGHT
 // }
 
-const geocoord = (() => {
+const geocode = (() => {
   return
 })
 
@@ -178,12 +187,7 @@ document.addEventListener("keydown", (e) => {
       font-weight: normal;
     }
     svg {
-      top: 0;
-      bottom: 0;
       right: 1.5em;
-      margin: auto;
-      width: 1.3em;
-      cursor: pointer;
     }
   }
   .transportation {
@@ -193,7 +197,13 @@ document.addEventListener("keydown", (e) => {
       text-align: center;
     }
     li {
-      margin: 0.5em 0 0.5em;
+      padding-top: 0.5em;
+      padding-bottom: 0.5em;
+      padding-left: 1.9em;
+      svg {
+        left: 1.1em;
+        height: 1.3em;
+      }
     }
   }
   .time {
@@ -230,6 +240,7 @@ document.addEventListener("keydown", (e) => {
     box-shadow: 2px 2px 4px 0px rgba(0,0,0, 0.19);
     overflow-y: auto;
     li {
+      position: relative;
       margin: 0.05em 0 0.05em;
       text-align: center;
       cursor: pointer;
@@ -245,7 +256,14 @@ document.addEventListener("keydown", (e) => {
     background-position: right 0.77rem center;
     background-size: 16px 12px;
   }
- }
+}
+svg {
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  width: 1.3em;
+  cursor: pointer;
+}
 </style>
 <style lang="scss">
 .c-toast-container {
