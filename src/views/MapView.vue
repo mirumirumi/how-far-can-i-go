@@ -7,6 +7,9 @@
       <ul v-if="selectingGeocode">
         <li v-for="g, i in geocodeResults" @click="selectGeocode(i)" :key="g">{{ makeReadableGeo(g.address_components) }} </li>
       </ul>
+      <div class="loading" v-if="isInputting">
+        <LoadSpinner />
+      </div>
       <div class="transparent_filter" v-if="isFormattedInput"></div>
     </div>
     <div class="transportation">
@@ -52,6 +55,7 @@ import TimeMapRequest from "@/utils/TimeMapRequest"
 import { apiKeyGoogle, appId, apiKeyTT } from "@/secrets/secrets"
 import TransparentBack from "@/components/modules/TransparentBack.vue"
 import SvgIcon from "@/components/parts/SvgIcon.vue"
+import LoadSpinner from "@/components/parts/LoadSpinner.vue"
 
 const store = useStore()
 const toast: any = inject("toast") // eslint-disable-line
@@ -149,6 +153,7 @@ const query = ref("")
 const selectingGeocode = ref(false)
 const geocodeResults = ref<Array<any>>([])
 const isFormattedInput = ref(false)
+const isInputting = ref(false)
 
 watch(query, (newQuery: string) => {
   if (newQuery === "") {
@@ -157,6 +162,7 @@ watch(query, (newQuery: string) => {
     return
   }
   if (newQuery === geoSelected) return
+  isInputting.value = true
   clearTimeout(timerID)
   timerID = setTimeout(geocode, 999)
 })
@@ -174,6 +180,7 @@ const geocode = (async () => {
   res?.data.results.forEach((r: any) => {
     geocodeResults.value.push(r)
   })
+  isInputting.value = false
   return
 })
 
@@ -315,6 +322,21 @@ document.addEventListener("keydown", (e) => {
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow-x: hidden;
+      }
+    }
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 90%;
+      height: 50px;
+      background-color: #fff;
+      margin: 0.3em auto 0;
+      padding: 0.4em 0 0.5em;
+      border-radius: 5px;
+      box-shadow: 2px 2px 4px 0px rgba(0,0,0, 0.19);
+      svg {
+        transform: scale(1.5);
       }
     }
     .transparent_filter {
