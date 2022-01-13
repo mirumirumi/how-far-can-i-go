@@ -3,10 +3,11 @@
   <div class="ui_wrap">
     <div class="search">
       <input type="text" id="search" class="input" autocomplete="off" placeholder="Search for..." v-model="query">
-      <SvgIcon icon="search" @click="geocode" />
+      <SvgIcon icon="search" @click="geocode" v-if="!isFormattedInput" />
       <ul v-if="selectingGeocode">
-        <li v-for="g, i in geocodeResults" @click="selectGeocode(i)" :key="g">{{ g.formatted_address.slice(3) }} </li>
+        <li v-for="g, i in geocodeResults" @click="selectGeocode(i)" :key="g">{{ makeReadableGeo(g.address_components) }} </li>
       </ul>
+      <div class="transparent_filter" v-if="isFormattedInput"></div>
     </div>
     <div class="transportation">
       <button type="button" id="transportation" class="input select_button" @click="select(`tp`)">
@@ -14,15 +15,15 @@
         {{ store.state.transportation.charAt(0).toUpperCase() + store.state.transportation.slice(1) }}
       </button>
       <ul v-if="selectingTp && isOpenBack">
-        <li @click="selectTp(`walking`)" :class="{highlight: selected.includes(`walking`)}">
+        <li @click="selectTp(`walking`)" :class="{highlight: condSelected.includes(`walking`)}">
           <SvgIcon icon="walking" />
           Walking
         </li>
-        <li @click="selectTp(`cycling`)" :class="{highlight: selected.includes(`cycling`)}">
+        <li @click="selectTp(`cycling`)" :class="{highlight: condSelected.includes(`cycling`)}">
           <SvgIcon icon="cycling" />
           Cycling
         </li>
-        <li @click="selectTp(`driving`)" :class="{highlight: selected.includes(`driving`)}">
+        <li @click="selectTp(`driving`)" :class="{highlight: condSelected.includes(`driving`)}">
           <SvgIcon icon="driving" />
           Driving
         </li>
@@ -31,7 +32,7 @@
     <div class="time">
       <button type="button" id="time" class="input select_button" @click="select(`time`)" v-html="`${ store.state.time } min`"></button>
       <ul v-if="selectingTime && isOpenBack">
-        <li v-for="i in 30" :value="i" :key="i" @click="selectTime(i)" :class="{highlight: selected.includes(i)}">{{ i }} min</li>
+        <li v-for="i in 30" :value="i" :key="i" @click="selectTime(i)" :class="{highlight: condSelected.includes(i)}">{{ i }} min</li>
       </ul>
     </div>
   </div>
@@ -41,12 +42,11 @@
 </template>
 
 <script setup lang="ts">
-import { inject, ref, watch } from "vue"
+import { inject, onMounted, ref, watch } from "vue"
 import { useStore } from "@/store"
 import axios from "axios"
 import { Loader } from "@googlemaps/js-api-loader"
 import { LatLng, SystemThemeConfig } from "@/utils/defines"
-import { delay } from "@/utils/utils"
 import { darkStyle } from "@/utils/darkStyle"
 import TimeMapRequest from "@/utils/TimeMapRequest"
 import { apiKeyGoogle, appId, apiKeyTT } from "@/secrets/secrets"
@@ -55,6 +55,10 @@ import SvgIcon from "@/components/parts/SvgIcon.vue"
 
 const store = useStore()
 const toast: any = inject("toast") // eslint-disable-line
+
+onMounted(() => {
+  (document.querySelector("#search") as HTMLElement).focus()
+})
 
 /**
  * maps
@@ -84,7 +88,7 @@ function getUserCurrentPosition(): Promise<LatLng> {
   let msg = "Your device was not able to obtain information about your current location."
   if (!navigator.geolocation) toast.error(msg)
 
-  return new Promise<any>((resolve, reject) => {  // eslint-disable-line
+  return new Promise<any>((resolve) => {  // eslint-disable-line
     navigator.geolocation.getCurrentPosition((location) => {
       resolve({
         lat: location.coords.latitude,
@@ -140,11 +144,19 @@ function shouldDarkMode(): boolean {
  * geocoding
  */
 let timerID = 0
+let geoSelected = ""
 const query = ref("")
 const selectingGeocode = ref(false)
 const geocodeResults = ref<Array<any>>([])
+const isFormattedInput = ref(false)
 
-watch(query, () => {
+watch(query, (newQuery: string) => {
+  if (newQuery === "") {
+    isFormattedInput.value = false
+    selectingGeocode.value = false
+    return
+  }
+  if (newQuery === geoSelected) return
   clearTimeout(timerID)
   timerID = setTimeout(geocode, 999)
 })
@@ -161,17 +173,23 @@ const geocode = (async () => {
   selectingGeocode.value = true
   res?.data.results.forEach((r: any) => {
     geocodeResults.value.push(r)
-  });
+  })
   return
 })
 
 const selectGeocode = ((index: number) => {
-  const selected = geocodeResults.value[index]
+  const result = makeReadableGeo(geocodeResults.value[index].address_components)
 
   /* set center position */
 
-  query.value = selected.formatted_address.slice(3)  // remove `日本、`
+  geoSelected = result
+  query.value = result
+  isFormattedInput.value = true
   closeSelections()
+})
+
+const makeReadableGeo = ((address_components: Array<any>): string => {
+  return `${ address_components[0].short_name } : ${ address_components[5].short_name } ${ address_components[4].short_name } ${ address_components[3].short_name } ${ address_components[2].short_name }`
 })
 
 /**
@@ -210,14 +228,14 @@ function makeRequest(): any {
 /**
  * ui
  */
-const selected = ref(["walking", 10])
+const condSelected = ref(["walking", 10])
 const selectTp = ((type: string) => {
-  selected.value[0] = type
+  condSelected.value[0] = type
   store.commit("setTransportation", type)
   closeSelections()
 })
 const selectTime = ((time: number) => {
-  selected.value[1] = time
+  condSelected.value[1] = time
   store.commit("setTime", time)
   closeSelections()
 })
@@ -278,8 +296,9 @@ document.addEventListener("keydown", (e) => {
   }
   .search {
     position: relative;
-    width: 275px;
+    width: 300px;
     input {
+      position: relative;
       width: 100%;
       font-weight: normal;
     }
@@ -297,6 +316,20 @@ document.addEventListener("keydown", (e) => {
         white-space: nowrap;
         overflow-x: hidden;
       }
+    }
+    .transparent_filter {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 1.3em;
+      margin: auto;
+      width: 2em;
+      height: 2em;
+      background: linear-gradient(90deg, hsla(0, 0%, 100%, 0), #fff);
+      z-index: 6;
+      pointer-events: none;
+      transition: all 0.23s ease-in-out;
     }
   }
   .transportation {
