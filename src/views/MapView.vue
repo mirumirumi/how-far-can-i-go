@@ -2,8 +2,11 @@
   <div id="map"></div>
   <div class="ui_wrap">
     <div class="search">
-      <input type="text" id="search" class="input" autocomplete="off" placeholder="Search for...">
+      <input type="text" id="search" class="input" autocomplete="off" placeholder="Search for..." v-model="query">
       <SvgIcon icon="search" @click="geocode" />
+      <ul v-if="selectingGeocode">
+        <li v-for="g, i in geocodeResults" @click="selectGeocode(i)" :key="g">{{ g.formatted_address.slice(3) }} </li>
+      </ul>
     </div>
     <div class="transportation">
       <button type="button" id="transportation" class="input select_button" @click="select(`tp`)">
@@ -38,20 +41,27 @@
 </template>
 
 <script setup lang="ts">
-import { inject, ref } from "vue"
+import { inject, ref, watch } from "vue"
+import { useStore } from "@/store"
+import axios from "axios"
 import { Loader } from "@googlemaps/js-api-loader"
-import { apiKey } from "@/secrets/secrets"
 import { LatLng, SystemThemeConfig } from "@/utils/defines"
+import { delay } from "@/utils/utils"
 import { darkStyle } from "@/utils/darkStyle"
+import TimeMapRequest from "@/utils/TimeMapRequest"
+import { apiKeyGoogle, appId, apiKeyTT } from "@/secrets/secrets"
 import TransparentBack from "@/components/modules/TransparentBack.vue"
 import SvgIcon from "@/components/parts/SvgIcon.vue"
-import { useStore } from "@/store"
 
 const store = useStore()
 const toast: any = inject("toast") // eslint-disable-line
+
+/**
+ * maps
+ */
 const initialCenter = await getUserCurrentPosition()
 const loader = new Loader({
-  apiKey: apiKey,
+  apiKey: apiKeyGoogle,
   version: "weekly",
 });
 
@@ -74,7 +84,7 @@ function getUserCurrentPosition(): Promise<LatLng> {
   let msg = "Your device was not able to obtain information about your current location."
   if (!navigator.geolocation) toast.error(msg)
 
-  return new Promise<any>((resolve, reject) => {   // eslint-disable-line
+  return new Promise<any>((resolve, reject) => {  // eslint-disable-line
     navigator.geolocation.getCurrentPosition((location) => {
       resolve({
         lat: location.coords.latitude,
@@ -98,7 +108,7 @@ function getUserCurrentPosition(): Promise<LatLng> {
           break
       }
       toast.error(msg)
-      reject(getCountryDefaultPosition())
+      resolve(getCountryDefaultPosition())
     }, { enableHighAccuracy: true })
   })
 }
@@ -112,6 +122,9 @@ function getCountryDefaultPosition(): LatLng {
   }
 }
 
+/**
+ * theme
+ */
 function shouldDarkMode(): boolean {
   return !window.matchMedia("(prefers-color-scheme: dark)").matches
   // const config = getSystemThemeConfig()
@@ -122,10 +135,81 @@ function shouldDarkMode(): boolean {
 //   return SystemThemeConfig.LIGHT
 // }
 
-const geocode = (() => {
+
+/**
+ * geocoding
+ */
+let timerID = 0
+const query = ref("")
+const selectingGeocode = ref(false)
+const geocodeResults = ref<Array<any>>([])
+
+watch(query, () => {
+  clearTimeout(timerID)
+  timerID = setTimeout(geocode, 999)
+})
+
+const geocode = (async () => {
+  geocodeResults.value.splice(0)
+  let res = null
+  try {
+    res = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${ query.value }&key=${ apiKeyGoogle }`)
+  } catch (e) {
+    console.log(e)
+  }
+  console.log(res?.data);
+  selectingGeocode.value = true
+  res?.data.results.forEach((r: any) => {
+    geocodeResults.value.push(r)
+  });
   return
 })
 
+const selectGeocode = ((index: number) => {
+  const selected = geocodeResults.value[index]
+
+  /* set center position */
+
+  query.value = selected.formatted_address.slice(3)  // remove `日本、`
+  closeSelections()
+})
+
+/**
+ * time map
+ */
+const getTimeMap = (async () => {
+  const request = makeRequest()
+  let res = null
+  try {
+    res = await axios.post("https://api.traveltimeapp.com/v4/time-map", 
+      request
+    , {
+      headers: {
+        "X-Application-Id": appId,
+        "X-Api-Key": apiKeyTT,
+        "Content-Type": "application/json; charset=UTF-8",
+      },
+    })
+  } catch (e) {
+    console.log(e)
+  }
+  console.log(res);
+  return
+})
+
+function makeRequest(): any {
+  const result = TimeMapRequest
+  result.departure_searches[0].id = "mirumi.me"
+  result.departure_searches[0].coords.lat = 35.8900822
+  result.departure_searches[0].coords.lng = 139.45467
+  result.departure_searches[0].travel_time = store.state.time * 60
+  result.departure_searches[0].transportation.type = store.state.transportation
+  return result
+}
+
+/**
+ * ui
+ */
 const selected = ref(["walking", 10])
 const selectTp = ((type: string) => {
   selected.value[0] = type
@@ -169,6 +253,7 @@ const select = (type: string) => {
 const closeSelections = (() => {
   selectingTp.value = false
   selectingTime.value = false
+  selectingGeocode.value = false
   isOpenBack.value = false
 })
 
@@ -193,12 +278,25 @@ document.addEventListener("keydown", (e) => {
   }
   .search {
     position: relative;
+    width: 275px;
     input {
-      width: 275px;
+      width: 100%;
       font-weight: normal;
     }
     svg {
       right: 1.5em;
+    }
+    ul {
+      width: 90%;
+      padding: 0.55em 0 0.5em;
+      li {
+        padding: 0.33em 1.1em 0.3em;
+        font-size: 0.88em;
+        text-align: left;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow-x: hidden;
+      }
     }
   }
   .transportation {
