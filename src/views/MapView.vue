@@ -100,18 +100,28 @@ loader.load().then((google) => {
     })
   }
 
+  map.addListener("center_changed", () => {
+    if (center.lat !== map.getCenter().lat()  && center.lng !== map.getCenter().lng()) return
+    marker.setMap(null)
+    marker = makeMarker(map, center)
+  })
+
+  map.addListener("click", (e: any) => {
+    const tempCenter = {
+      lat: e.latLng.lat(),
+      lng: e.latLng.lng(),
+    }
+    center = tempCenter
+    marker.setMap(null)
+    marker = makeMarker(map, tempCenter)
+  })
+
   marker.addListener("click", () => {
     if (marker.getAnimation() !== null) {
       marker.setAnimation(null)
     } else {
       marker.setAnimation(google.maps.Animation.BOUNCE)
     }
-  })
-
-  map.addListener("center_changed", () => {
-    if (center.lat !== map.getCenter().lat()  && center.lng !== map.getCenter().lng()) return
-    marker.setMap(null)
-    marker = makeMarker(map, center)
   })
 })
 /* eslint-enable */
