@@ -8,24 +8,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const p = defineProps<{
   icon: string,
 }>()
 
 const viewBox = ref("0 0 512 512")
-switch (p.icon) {
-  case "walking":
-    viewBox.value = "0 0 320 512"
-    break
-  case "cycling":
-    viewBox.value = "0 0 640 512"
-    break
-  case "driving":
-    viewBox.value = "0 0 640 512"
-    break
-}
+
+watch(p, () => {
+  switch (p.icon) {
+    case "walking":
+      viewBox.value = "0 0 320 512"
+      break
+    case "cycling":
+      viewBox.value = "0 0 640 512"
+      break
+    case "driving":
+      viewBox.value = "0 0 640 512"
+      break
+  }
+})
 </script>
 
 <style lang="scss" scoped>
