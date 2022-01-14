@@ -3,14 +3,14 @@
   <div class="ui_wrap">
     <div class="search">
       <input type="text" id="search" class="input" autocomplete="off" placeholder="Search for..." v-model="query">
-      <SvgIcon icon="search" @click="geocode" v-if="!isFormattedInput" />
+      <SvgIcon icon="search" @click="geocode" />
       <ul v-show="selectingGeocode">
         <li v-for="g, i in geocodeResults" @click="selectGeocode(i)" :key="g">{{ makeReadableGeo(g.address_components) }} </li>
       </ul>
       <div class="loading" v-if="isInputting">
         <LoadSpinner />
       </div>
-      <div class="transparent_filter" v-if="isFormattedInput"></div>
+      <div class="transparent_filter"></div>
     </div>
     <div class="transportation">
       <button type="button" id="transportation" class="input select_button" @click="select(`tp`)">
@@ -115,6 +115,8 @@ loader.load().then((google) => {
     center = tempCenter
     marker.setMap(null)
     marker = makeMarker(map, tempCenter)
+    query.value = `${ center.lat } ${ center.lng }`
+    getTimeMap()
   })
 
   marker.addListener("click", () => {
@@ -200,7 +202,7 @@ watch(query, (newQuery: string) => {
     selectingGeocode.value = false
     return
   }
-  if (newQuery === geoSelected) return
+  if (newQuery === geoSelected || newQuery.search(/\d+\.?(\d+)? \d+\.?(\d+)?/gmi) !== -1) return
   isInputting.value = true
   clearTimeout(timerID)
   timerID = setTimeout(geocode, 777)
@@ -236,6 +238,8 @@ const selectGeocode = ((index: number) => {
   query.value = result
   isFormattedInput.value = true
   closeSelections()
+
+  getTimeMap()
 })
 
 const makeReadableGeo = ((address_components: Array<any>): string => {
@@ -250,6 +254,7 @@ const makeReadableGeo = ((address_components: Array<any>): string => {
  * time map
  */
 const getTimeMap = (async () => {
+  if (query.value === "") return
   const request = makeRequest()
   let res = null
   try {
@@ -272,8 +277,8 @@ const getTimeMap = (async () => {
 function makeRequest(): any {
   const result = TimeMapRequest
   result.departure_searches[0].id = "mirumi.me"
-  result.departure_searches[0].coords.lat = 35.8900822
-  result.departure_searches[0].coords.lng = 139.45467
+  result.departure_searches[0].coords.lat = center.lat
+  result.departure_searches[0].coords.lng = center.lng
   result.departure_searches[0].travel_time = store.state.time * 60
   result.departure_searches[0].transportation.type = store.state.transportation
   return result
@@ -288,11 +293,14 @@ const selectTp = ((type: string) => {
   condSelected.value[0] = type
   store.commit("setTransportation", type)
   closeSelections()
+  getTimeMap()
 })
+
 const selectTime = ((time: number) => {
   condSelected.value[1] = time
   store.commit("setTime", time)
   closeSelections()
+  getTimeMap()
 })
 
 const selectingTp = ref(false)
@@ -380,10 +388,12 @@ document.addEventListener("keydown", (e) => {
     input {
       position: relative;
       width: 100%;
+      padding-right: 3em;
       font-weight: normal;
     }
     svg {
       right: 1.5em;
+      z-index: 7;
     }
     ul {
       width: 90%;
@@ -417,9 +427,9 @@ document.addEventListener("keydown", (e) => {
       position: absolute;
       top: 0;
       bottom: 0;
-      right: 1.3em;
+      right: 3em;
       margin: auto;
-      width: 2em;
+      width: 1em;
       height: 2em;
       background: linear-gradient(90deg, hsla(0, 0%, 100%, 0), #fff);
       z-index: 6;
