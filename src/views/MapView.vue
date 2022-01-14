@@ -57,8 +57,9 @@ import TransparentBack from "@/components/modules/TransparentBack.vue"
 import SvgIcon from "@/components/parts/SvgIcon.vue"
 import LoadSpinner from "@/components/parts/LoadSpinner.vue"
 
+/* eslint-disable */
 const store = useStore()
-const toast: any = inject("toast") // eslint-disable-line
+const toast: any = inject("toast")
 
 onMounted(() => {
   (document.querySelector("#search") as HTMLElement).focus()
@@ -67,15 +68,16 @@ onMounted(() => {
 /**
  * maps
  */
-const initialCenter = await getUserCurrentPosition()
+let map: any
+let center = await getUserCurrentPosition()
 const loader = new Loader({
   apiKey: apiKeyGoogle,
   version: "weekly",
-});
+})
 
 loader.load().then((google) => {
-  new google.maps.Map(document.getElementById("map") as HTMLElement, {
-    center:            initialCenter,
+  map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
+    center:            center,
     zoom:              15,
     mapTypeControl:    false,
     fullscreenControl: false,
@@ -85,8 +87,34 @@ loader.load().then((google) => {
       position: google.maps.ControlPosition.LEFT_BOTTOM,
     },
     styles: shouldDarkMode() ? darkStyle : null,
-  });
-});
+  })
+
+  let marker = makeMarker(map, center)
+
+  function makeMarker(map: any, position: LatLng): any {
+    return new google.maps.Marker({
+      map:       map,
+      position:  position,
+      draggable: true,
+      animation: google.maps.Animation.DROP,
+    })
+  }
+
+  marker.addListener("click", () => {
+    if (marker.getAnimation() !== null) {
+      marker.setAnimation(null)
+    } else {
+      marker.setAnimation(google.maps.Animation.BOUNCE)
+    }
+  })
+
+  map.addListener("center_changed", () => {
+    if (center.lat !== map.getCenter().lat()  && center.lng !== map.getCenter().lng()) return
+    marker.setMap(null)
+    marker = makeMarker(map, center)
+  })
+})
+/* eslint-enable */
 
 function getUserCurrentPosition(): Promise<LatLng> {
   let msg = "Your device was not able to obtain information about your current location."
@@ -100,7 +128,7 @@ function getUserCurrentPosition(): Promise<LatLng> {
       })
     }, (e) => {
       msg = "Failed to get information about the current location."
-      console.log(e.code);
+      console.log(e.code)
       switch (e.code) {
         case 0:
           msg += "\nThe cause is unknown."
@@ -164,7 +192,7 @@ watch(query, (newQuery: string) => {
   if (newQuery === geoSelected) return
   isInputting.value = true
   clearTimeout(timerID)
-  timerID = setTimeout(geocode, 999)
+  timerID = setTimeout(geocode, 777)
 })
 
 const geocode = (async () => {
@@ -175,7 +203,7 @@ const geocode = (async () => {
   } catch (e) {
     console.log(e)
   }
-  console.log(res?.data);
+  console.log(res?.data)
   selectingGeocode.value = true
   res?.data.results.forEach((r: any) => {
     geocodeResults.value.push(r)
@@ -185,10 +213,13 @@ const geocode = (async () => {
 })
 
 const selectGeocode = ((index: number) => {
+  center = {
+    lat: geocodeResults.value[index].geometry.location.lat,
+    lng: geocodeResults.value[index].geometry.location.lng,
+  }
+  map.setCenter(center)
+
   const result = makeReadableGeo(geocodeResults.value[index].address_components)
-
-  /* set center position */
-
   geoSelected = result
   query.value = result
   isFormattedInput.value = true
@@ -196,7 +227,11 @@ const selectGeocode = ((index: number) => {
 })
 
 const makeReadableGeo = ((address_components: Array<any>): string => {
-  return `${ address_components[0].short_name } : ${ address_components[5].short_name } ${ address_components[4].short_name } ${ address_components[3].short_name } ${ address_components[2].short_name }`
+  let names = ""
+  for (let i = 5; 1 <= i; i--) {
+    if (address_components[i] !== undefined) names += address_components[i].short_name.replace(/JP/gmi, "")
+  }
+  return `${ address_components[0].short_name } : ${ names === "" ? "日本" : names }`
 })
 
 /**
@@ -218,7 +253,7 @@ const getTimeMap = (async () => {
   } catch (e) {
     console.log(e)
   }
-  console.log(res);
+  console.log(res)
   return
 })
 
