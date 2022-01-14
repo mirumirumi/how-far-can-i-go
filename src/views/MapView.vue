@@ -4,7 +4,7 @@
     <div class="search">
       <input type="text" id="search" class="input" autocomplete="off" placeholder="Search for..." v-model="query">
       <SvgIcon icon="search" @click="geocode" v-if="!isFormattedInput" />
-      <ul v-if="selectingGeocode">
+      <ul v-show="selectingGeocode">
         <li v-for="g, i in geocodeResults" @click="selectGeocode(i)" :key="g">{{ makeReadableGeo(g.address_components) }} </li>
       </ul>
       <div class="loading" v-if="isInputting">
@@ -17,16 +17,16 @@
         <SvgIcon :icon="store.state.transportation" />
         {{ store.state.transportation.charAt(0).toUpperCase() + store.state.transportation.slice(1) }}
       </button>
-      <ul v-if="selectingTp && isOpenBack">
-        <li @click="selectTp(`walking`)" :class="{highlight: condSelected.includes(`walking`)}">
+      <ul v-show="selectingTp && isOpenBack">
+        <li @click="selectTp(`walking`)" :class="{highlight: condSelected.includes(`walking`)}" id="walking" tabindex="101" @keydown="selectByKeys">
           <SvgIcon icon="walking" />
           Walking
         </li>
-        <li @click="selectTp(`cycling`)" :class="{highlight: condSelected.includes(`cycling`)}">
+        <li @click="selectTp(`cycling`)" :class="{highlight: condSelected.includes(`cycling`)}" id="cycling" tabindex="102" @keydown="selectByKeys">
           <SvgIcon icon="cycling" />
           Cycling
         </li>
-        <li @click="selectTp(`driving`)" :class="{highlight: condSelected.includes(`driving`)}">
+        <li @click="selectTp(`driving`)" :class="{highlight: condSelected.includes(`driving`)}" id="driving" tabindex="103" @keydown="selectByKeys">
           <SvgIcon icon="driving" />
           Driving
         </li>
@@ -34,8 +34,8 @@
     </div>
     <div class="time">
       <button type="button" id="time" class="input select_button" @click="select(`time`)" v-html="`${ store.state.time } min`"></button>
-      <ul v-if="selectingTime && isOpenBack">
-        <li v-for="i in 30" :value="i" :key="i" @click="selectTime(i)" :class="{highlight: condSelected.includes(i)}">{{ i }} min</li>
+      <ul v-show="selectingTime && isOpenBack">
+        <li v-for="i in 30" :value="i" :key="i" @click="selectTime(i)" :class="{highlight: condSelected.includes(i)}" :id="`min${ i.toString() }`" :tabindex="105 + i" @keydown="selectByKeys">{{ i }} min</li>
       </ul>
     </div>
   </div>
@@ -56,6 +56,7 @@ import { apiKeyGoogle, appId, apiKeyTT } from "@/secrets/secrets"
 import TransparentBack from "@/components/modules/TransparentBack.vue"
 import SvgIcon from "@/components/parts/SvgIcon.vue"
 import LoadSpinner from "@/components/parts/LoadSpinner.vue"
+import { delay, tabindexToID } from "@/utils/utils"
 
 /* eslint-disable */
 const store = useStore()
@@ -206,6 +207,7 @@ watch(query, (newQuery: string) => {
 })
 
 const geocode = (async () => {
+  if (query.value == "") return
   geocodeResults.value.splice(0)
   let res = null
   try {
@@ -281,6 +283,7 @@ function makeRequest(): any {
  * ui
  */
 const condSelected = ref(["walking", 10])
+
 const selectTp = ((type: string) => {
   condSelected.value[0] = type
   store.commit("setTransportation", type)
@@ -295,6 +298,7 @@ const selectTime = ((time: number) => {
 const selectingTp = ref(false)
 const selectingTime = ref(false)
 const isOpenBack = ref(false)
+
 const select = (type: string) => {
   if (!isOpenBack.value) {
     if (type === "tp")    selectingTp.value   = true    
@@ -318,7 +322,31 @@ const select = (type: string) => {
       isOpenBack.value   = false
     }
   }
+  setTimeout(() => {
+    document.getElementById(store.state.transportation)?.focus()
+    document.getElementById(`min${ store.state.time.toString() }`)?.focus()
+  }, 1)  // https://bit.ly/321pc3k
 }
+
+const selectByKeys = ((e: any) => {
+  e.preventDefault()
+  const now = (document.activeElement as HTMLElement).tabIndex
+  if (!now) return
+
+  if (e.key === "Enter") {
+    now <= 104 ? selectTp(tabindexToID(now)) : selectTime(parseInt(tabindexToID(now).slice(3)))
+  }
+
+  let to = 0
+  if (e.key === "ArrowUp") {
+    to = now - 1
+  } else if (e.key === "ArrowDown") {
+    to = now + 1
+  }
+  const result = tabindexToID(to)
+  setTimeout(() => document.getElementById(result)?.focus(), 1)
+
+})
 
 const closeSelections = (() => {
   selectingTp.value = false
@@ -461,6 +489,10 @@ document.addEventListener("keydown", (e) => {
       cursor: pointer;
       &:hover {
         background-color: #eaeaea;
+      }
+      &:focus {
+        background-color: #eaeaea;
+        outline: 0;
       }
     }
   }
