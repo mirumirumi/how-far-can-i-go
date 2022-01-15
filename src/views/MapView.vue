@@ -2,7 +2,7 @@
   <div id="map"></div>
   <div class="ui_wrap">
     <div class="search">
-      <input type="text" id="search" class="input" autocomplete="off" placeholder="Search for..." v-model="query">
+      <input type="text" id="search" class="input" autocomplete="off" placeholder="Search for..." v-model="query" @keydown="enterCoords">
       <SvgIcon icon="search" @click="geocode" />
       <ul v-show="selectingGeocode && !isInputting">
         <li v-for="g, i in geocodeResults" @click="selectGeocode(i)" :key="g">{{ makeReadableGeo(g.address_components) }} </li>
@@ -251,8 +251,6 @@ watch(query, async (newQuery: string) => {
       lat: parseFloat(newQuery.replace(regexpCoords, "$1")),
       lng: parseFloat(newQuery.replace(regexpCoords, "$3")),
     }
-    await getTimeMap()
-    map.setCenter(center)
     return
   }
   isInputting.value = true
@@ -260,8 +258,30 @@ watch(query, async (newQuery: string) => {
   timerID = setTimeout(geocode, 777)
 })
 
+const enterCoords = (async (e: any) => {
+  if (e.key === "Enter" && query.value.search(regexpCoords) !== -1) {
+    execWhenQueryIsCoords()
+    return
+  }
+})
+
+async function execWhenQueryIsCoords(): Promise<void> {
+  center = {
+    lat: parseFloat(query.value.replace(regexpCoords, "$1")),
+    lng: parseFloat(query.value.replace(regexpCoords, "$3")),
+  }
+  await getTimeMap()
+  map.setCenter(center)
+  return
+}
+
 const geocode = (async () => {
-  if (query.value == "" || query.value.search(regexpCoords) !== -1) return
+  if (query.value == "") return
+  if (query.value.search(regexpCoords) !== -1) {
+    execWhenQueryIsCoords()
+    return
+  }
+
   geocodeResults.value.splice(0)
   let res = null
   try {
