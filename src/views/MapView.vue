@@ -41,6 +41,9 @@
   </div>
   <teleport to="body">
     <TransparentBack v-if="isOpenBack" @click="closeSelections" />
+    <transition name="fade">
+      <LoadingBack v-if="isGettingTimeMap" />
+    </transition>
   </teleport>
 </template>
 
@@ -54,6 +57,7 @@ import { darkStyle } from "@/utils/darkStyle"
 import TimeMapRequest from "@/utils/TimeMapRequest"
 import { apiKeyGoogle, appId, apiKeyTT } from "@/secrets/secrets"
 import TransparentBack from "@/components/modules/TransparentBack.vue"
+import LoadingBack from "@/components/modules/LoadingBack.vue"
 import SvgIcon from "@/components/parts/SvgIcon.vue"
 import LoadSpinner from "@/components/parts/LoadSpinner.vue"
 import { delay, tabindexToID } from "@/utils/utils"
@@ -301,8 +305,10 @@ const makeReadableGeo = ((address_components: Array<any>): string => {
 /**
  * time map
  */
+const isGettingTimeMap = ref(false)
 const getTimeMap = (async () => {
   if (query.value === "") return
+  isGettingTimeMap.value = true
   const request = makeRequest()
   let res = null
   try {
@@ -320,6 +326,7 @@ const getTimeMap = (async () => {
   }
   console.log(res)
   paths = res?.data.results[0].shapes[0].shell
+  isGettingTimeMap.value = false
   return
 })
 
