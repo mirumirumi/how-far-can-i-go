@@ -70,6 +70,7 @@ onMounted(() => {
  */
 let map: any
 let center = await getUserCurrentPosition()
+let paths: Array<LatLng> = [{ lat: 0, lng: 0 }]
 const loader = new Loader({
   apiKey: apiKeyGoogle,
   version: "weekly",
@@ -89,12 +90,14 @@ loader.load().then((google) => {
     styles: shouldDarkMode() ? darkStyle : null,
   })
 
-  let marker = makeMarker(map, center)
+  let marker = makeMarker()
+  marker.addListener("click", markerEventCallbackClick)
+  marker.addListener("dragend", markerEventCallbackDragend)
 
-  function makeMarker(map: any, position: LatLng): any {
+  function makeMarker(): any {
     return new google.maps.Marker({
       map:       map,
-      position:  position,
+      position:  center,
       draggable: true,
       animation: google.maps.Animation.DROP,
     })
@@ -102,40 +105,66 @@ loader.load().then((google) => {
 
   map.addListener("center_changed", () => {
     if (center.lat !== map.getCenter().lat()  && center.lng !== map.getCenter().lng()) return
-    marker.setMap(null)
-    marker = makeMarker(map, center)
+    switchNewMarker()
+    drawPolygon()
   })
 
-  map.addListener("click", (e: any) => {
-    const tempCenter = {
+  map.addListener("click", async (e: any) => {
+    center = {
       lat: e.latLng.lat(),
       lng: e.latLng.lng(),
     }
-    center = tempCenter
-    marker.setMap(null)
-    marker = makeMarker(map, tempCenter)
+    switchNewMarker()
     query.value = `${ center.lat } ${ center.lng }`
-    getTimeMap()
+    await getTimeMap()
+    drawPolygon()
   })
 
-  marker.addListener("click", () => {
+  function switchNewMarker(): void {
+    marker.setMap(null)
+    marker = makeMarker()
+    marker.addListener("click", markerEventCallbackClick)
+    marker.addListener("dragend", markerEventCallbackDragend)
+  }
+
+  function markerEventCallbackClick() {
     if (marker.getAnimation() !== null) {
       marker.setAnimation(null)
     } else {
       marker.setAnimation(google.maps.Animation.BOUNCE)
     }
-  })
+  }
 
-  marker.addListener("dragend", () => {
+  async function markerEventCallbackDragend() {
     center = {
       lat: marker.getPosition().lat(),
       lng: marker.getPosition().lng(),
     }
     query.value = `${ center.lat } ${ center.lng }`
-    getTimeMap()
-  })
+    await getTimeMap()
+    drawPolygon()
+  }
+
+  let polygon = makePolygon(paths)
+  polygon.setMap(map)
+
+  function makePolygon(paths: Array<LatLng>): any {
+    return new google.maps.Polygon({
+      paths:         paths,
+      strokeColor:   "#ff8138",
+      strokeOpacity: 0.77,
+      strokeWeight:  3,
+      fillColor:     "#ff8138",
+      fillOpacity:   0.31,
+    })
+  }
+
+  function drawPolygon() :void {
+    polygon.setMap(null)
+    polygon = makePolygon(paths)
+    polygon.setMap(map)
+  }
 })
-/* eslint-enable */
 
 function getUserCurrentPosition(): Promise<LatLng> {
   let msg = "Your device was not able to obtain information about your current location."
@@ -234,11 +263,13 @@ const geocode = (async () => {
   return
 })
 
-const selectGeocode = ((index: number) => {
+const selectGeocode = (async (index: number) => {
   center = {
     lat: geocodeResults.value[index].geometry.location.lat,
     lng: geocodeResults.value[index].geometry.location.lng,
   }
+
+  await getTimeMap()
   map.setCenter(center)
 
   const result = makeReadableGeo(geocodeResults.value[index].address_components)
@@ -246,8 +277,6 @@ const selectGeocode = ((index: number) => {
   query.value = result
   isFormattedInput.value = true
   closeSelections()
-
-  getTimeMap()
 })
 
 const makeReadableGeo = ((address_components: Array<any>): string => {
@@ -279,6 +308,7 @@ const getTimeMap = (async () => {
     console.log(e)
   }
   console.log(res)
+  paths = res?.data.results[0].shapes[0].shell
   return
 })
 
@@ -297,18 +327,18 @@ function makeRequest(): any {
  */
 const condSelected = ref(["walking", 10])
 
-const selectTp = ((type: string) => {
+const selectTp = (async (type: string) => {
   condSelected.value[0] = type
   store.commit("setTransportation", type)
   closeSelections()
-  getTimeMap()
+  await getTimeMap()
 })
 
-const selectTime = ((time: number) => {
+const selectTime = (async (time: number) => {
   condSelected.value[1] = time
   store.commit("setTime", time)
   closeSelections()
-  getTimeMap()
+  await getTimeMap()
 })
 
 const selectingTp = ref(false)
