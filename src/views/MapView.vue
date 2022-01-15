@@ -306,6 +306,8 @@ const selectGeocode = (async (index: number) => {
 
   await getTimeMap()
   map.setCenter(center)
+  const boundsFitted = makeBoundsFitted()
+  map.fitBounds(boundsFitted)
 
   const result = makeReadableGeo(geocodeResults.value[index].address_components)
   geoSelected = result
@@ -313,6 +315,17 @@ const selectGeocode = (async (index: number) => {
   isFormattedInput.value = true
   closeSelections()
 })
+
+function makeBoundsFitted(): any {
+  const result = { north: -90, east: -180, south: 90, west: 180 }
+  for (const p of paths) {
+    if (result.north < p.lat) result.north = p.lat
+    if (result.east  < p.lng) result.east  = p.lng
+    if (result.south > p.lat) result.south = p.lat
+    if (result.west  > p.lng) result.west  = p.lng
+  }
+  return result
+}
 
 const makeReadableGeo = ((address_components: Array<any>): string => {
   let names = ""
