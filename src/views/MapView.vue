@@ -58,7 +58,6 @@ import SvgIcon from "@/components/parts/SvgIcon.vue"
 import LoadSpinner from "@/components/parts/LoadSpinner.vue"
 import { delay, tabindexToID } from "@/utils/utils"
 
-/* eslint-disable */
 const store = useStore()
 const toast: any = inject("toast")
 
@@ -125,6 +124,15 @@ loader.load().then((google) => {
     } else {
       marker.setAnimation(google.maps.Animation.BOUNCE)
     }
+  })
+
+  marker.addListener("dragend", () => {
+    center = {
+      lat: marker.getPosition().lat(),
+      lng: marker.getPosition().lng(),
+    }
+    query.value = `${ center.lat } ${ center.lng }`
+    getTimeMap()
   })
 })
 /* eslint-enable */
@@ -435,6 +443,9 @@ document.addEventListener("keydown", (e) => {
       z-index: 6;
       pointer-events: none;
       transition: all 0.23s ease-in-out;
+    }
+    #search:focus ~ .transparent_filter {
+      display: none;
     }
   }
   .transportation {
