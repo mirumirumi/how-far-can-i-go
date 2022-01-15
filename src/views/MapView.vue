@@ -4,7 +4,7 @@
     <div class="search">
       <input type="text" id="search" class="input" autocomplete="off" placeholder="Search for..." v-model="query">
       <SvgIcon icon="search" @click="geocode" />
-      <ul v-show="selectingGeocode">
+      <ul v-show="selectingGeocode && !isInputting">
         <li v-for="g, i in geocodeResults" @click="selectGeocode(i)" :key="g">{{ makeReadableGeo(g.address_components) }} </li>
       </ul>
       <div class="loading" v-if="isInputting">
@@ -233,21 +233,31 @@ const selectingGeocode = ref(false)
 const geocodeResults = ref<Array<any>>([])
 const isFormattedInput = ref(false)
 const isInputting = ref(false)
+const regexpCoords = /(\d+\.?(\d+)?) *,? *(\d+\.?(\d+)?)/gmi
 
-watch(query, (newQuery: string) => {
+watch(query, async (newQuery: string) => {
   if (newQuery === "") {
     isFormattedInput.value = false
     selectingGeocode.value = false
     return
   }
-  if (newQuery === geoSelected || newQuery.search(/\d+\.?(\d+)? \d+\.?(\d+)?/gmi) !== -1) return
+  if (newQuery === geoSelected) return
+  if (newQuery.search(regexpCoords) !== -1) {
+    center = {
+      lat: parseFloat(newQuery.replace(regexpCoords, "$1")),
+      lng: parseFloat(newQuery.replace(regexpCoords, "$3")),
+    }
+    await getTimeMap()
+    map.setCenter(center)
+    return
+  }
   isInputting.value = true
   clearTimeout(timerID)
   timerID = setTimeout(geocode, 777)
 })
 
 const geocode = (async () => {
-  if (query.value == "") return
+  if (query.value == "" || query.value.search(regexpCoords) !== -1) return
   geocodeResults.value.splice(0)
   let res = null
   try {
