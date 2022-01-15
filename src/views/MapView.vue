@@ -70,6 +70,7 @@ onMounted(() => {
  */
 let map: any
 let center = await getUserCurrentPosition()
+let polygon: any
 let paths: Array<LatLng> = [{ lat: 0, lng: 0 }]
 const loader = new Loader({
   apiKey: apiKeyGoogle,
@@ -145,7 +146,7 @@ loader.load().then((google) => {
     drawPolygon()
   }
 
-  let polygon = makePolygon(paths)
+  polygon = makePolygon(paths)
   polygon.setMap(map)
 
   function makePolygon(paths: Array<LatLng>): any {
@@ -332,6 +333,7 @@ const selectTp = (async (type: string) => {
   store.commit("setTransportation", type)
   closeSelections()
   await getTimeMap()
+  polygon.setPaths(paths)
 })
 
 const selectTime = (async (time: number) => {
@@ -339,6 +341,7 @@ const selectTime = (async (time: number) => {
   store.commit("setTime", time)
   closeSelections()
   await getTimeMap()
+  polygon.setPaths(paths)
 })
 
 const selectingTp = ref(false)
