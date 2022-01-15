@@ -5,7 +5,7 @@
       <input type="text" id="search" class="input" autocomplete="off" placeholder="Search for..." v-model="query" @keydown="enterCoords">
       <SvgIcon icon="search" @click="geocode" />
       <ul v-show="selectingGeocode && !isInputting">
-        <li v-for="g, i in geocodeResults" @click="selectGeocode(i)" :key="g">{{ makeReadableGeo(g.address_components) }} </li>
+        <li v-for="g, i in geocodeResults" @click="selectGeocode(i)" :key="g" @keydown="selectByKeys" :tabindex="301 + i" :id="`geo${ (301 + i).toString() }`">{{ makeReadableGeo(g.address_components) }}</li>
       </ul>
       <div class="loading" v-if="isInputting">
         <LoadSpinner />
@@ -35,7 +35,7 @@
     <div class="time">
       <button type="button" id="time" class="input select_button" @click="select(`time`)" v-html="`${ store.state.time } min`"></button>
       <ul v-show="selectingTime && isOpenBack">
-        <li v-for="i in 30" :value="i" :key="i" @click="selectTime(i)" :class="{highlight: condSelected.includes(i)}" :id="`min${ i.toString() }`" :tabindex="105 + i" @keydown="selectByKeys">{{ i }} min</li>
+        <li v-for="i in 30" :value="i" :key="i" @click="selectTime(i)" :class="{highlight: condSelected.includes(i)}" :id="`min${ (200 + i).toString() }`" :tabindex="200 + i" @keydown="selectByKeys">{{ i }} min</li>
       </ul>
     </div>
   </div>
@@ -258,7 +258,7 @@ watch(query, async (newQuery: string) => {
   timerID = setTimeout(geocode, 777)
 })
 
-const enterCoords = (async (e: any) => {
+const enterCoords = (async (e: KeyboardEvent) => {
   if (e.key === "Enter" && query.value.search(regexpCoords) !== -1) {
     execWhenQueryIsCoords()
     return
@@ -281,7 +281,6 @@ const geocode = (async () => {
     execWhenQueryIsCoords()
     return
   }
-
   geocodeResults.value.splice(0)
   let res = null
   try {
@@ -295,6 +294,9 @@ const geocode = (async () => {
     geocodeResults.value.push(r)
   })
   isInputting.value = false
+  setTimeout(() => {
+    document.getElementById("geo301")?.focus()
+  }, 1)  // https://bit.ly/321pc3k
   return
 })
 
@@ -306,8 +308,7 @@ const selectGeocode = (async (index: number) => {
 
   await getTimeMap()
   map.setCenter(center)
-  const boundsFitted = makeBoundsFitted()
-  map.fitBounds(boundsFitted)
+  map.fitBounds(makeBoundsFitted())
 
   const result = makeReadableGeo(geocodeResults.value[index].address_components)
   geoSelected = result
@@ -423,17 +424,19 @@ const select = (type: string) => {
   }
   setTimeout(() => {
     document.getElementById(store.state.transportation)?.focus()
-    document.getElementById(`min${ store.state.time.toString() }`)?.focus()
+    document.getElementById(`min2${ store.state.time < 10 ? "0" + store.state.time.toString() : store.state.time.toString() }`)?.focus()
   }, 1)  // https://bit.ly/321pc3k
 }
 
-const selectByKeys = ((e: any) => {
+const selectByKeys = ((e: KeyboardEvent) => {
   e.preventDefault()
   const now = (document.activeElement as HTMLElement).tabIndex
   if (!now) return
 
   if (e.key === "Enter") {
-    now <= 104 ? selectTp(tabindexToID(now)) : selectTime(parseInt(tabindexToID(now).slice(3)))
+    if (300 <= now) selectGeocode(now - 301)
+    else if (now <= 104) selectTp(tabindexToID(now))
+    else selectTime(parseInt(tabindexToID(now).slice(3)) - 200)
   }
 
   let to = 0
@@ -442,9 +445,8 @@ const selectByKeys = ((e: any) => {
   } else if (e.key === "ArrowDown") {
     to = now + 1
   }
-  const result = tabindexToID(to)
+  const result = tabindexToID(to, geocodeResults.value.length)
   setTimeout(() => document.getElementById(result)?.focus(), 1)
-
 })
 
 const closeSelections = (() => {

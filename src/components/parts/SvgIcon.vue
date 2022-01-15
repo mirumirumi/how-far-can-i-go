@@ -15,8 +15,13 @@ const p = defineProps<{
 }>()
 
 const viewBox = ref("0 0 512 512")
+setViewBox()
 
 watch(p, () => {
+  setViewBox()
+})
+
+function setViewBox(): void {
   switch (p.icon) {
     case "walking":
       viewBox.value = "0 0 320 512"
@@ -28,7 +33,7 @@ watch(p, () => {
       viewBox.value = "0 0 640 512"
       break
   }
-})
+}
 </script>
 
 <style lang="scss" scoped>
