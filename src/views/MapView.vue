@@ -39,6 +39,18 @@
       </ul>
     </div>
   </div>
+  <div class="ui_bottom_wrap">
+    <div class="url_box balloon_menu" v-if="isOpenSaveBox">
+      <input type="text" id="url" class="input" autocomplete="off" readonly v-model="currentFullUrl" @focus="focusedURLInput">
+      <div class="description">
+        <span>You can use this URL to save the map and to share it with your friends!</span>
+      </div>
+    </div>
+    <button type="button" class="button fill submit" @click="saveMap">
+      Save or Share
+      <span class="dropdown-caret"></span>
+    </button>
+  </div>
   <teleport to="body">
     <TransparentBack v-if="isOpenBack" @click="closeSelections" />
     <transition name="fade">
@@ -260,6 +272,7 @@ watch(query, async (newQuery: string) => {
 
 const enterCoords = (async (e: KeyboardEvent) => {
   if (e.key === "Enter" && query.value.search(regexpCoords) !== -1) {
+    query.value = `${ center.lat } ${ center.lng }`
     execWhenQueryIsCoords()
     return
   }
@@ -342,6 +355,8 @@ const makeReadableGeo = ((address_components: Array<any>): string => {
 const isGettingTimeMap = ref(false)
 const getTimeMap = (async () => {
   if (query.value === "") return
+  addQueryParameter("coords", query.value)
+
   isGettingTimeMap.value = true
   const request = makeRequest()
   let res = null
@@ -382,6 +397,7 @@ const selectTp = (async (type: string) => {
   closeSelections()
   await getTimeMap()
   polygon.setPaths(paths)
+  addQueryParameter("type", type)
 })
 
 const selectTime = (async (time: number) => {
@@ -389,6 +405,7 @@ const selectTime = (async (time: number) => {
   closeSelections()
   await getTimeMap()
   polygon.setPaths(paths)
+  addQueryParameter("time", time.toString())
 })
 
 const selectingTp = ref(false)
@@ -449,11 +466,60 @@ const closeSelections = (() => {
   selectingTp.value = false
   selectingTime.value = false
   selectingGeocode.value = false
+  isOpenSaveBox.value = false
   isOpenBack.value = false
 })
 
 document.addEventListener("keydown", (e) => {
   if (e.key == "Escape") closeSelections()
+})
+
+/**
+ * save map
+ */
+const currentFullUrl = ref(location.href)
+const isOpenSaveBox = ref(false)
+const saveMap = (() => {
+  const url = new URL(currentFullUrl.value)
+  if (!url.searchParams.get("coords")) addQueryParameter("coords", `${ center.lat } ${ center.lng }`)
+  if (!url.searchParams.get("type")) addQueryParameter("type", "walking")
+  if (!url.searchParams.get("time")) addQueryParameter("time", "10")
+  isOpenSaveBox.value = true
+  isOpenBack.value = true
+})
+
+function addQueryParameter(key: string, value: string): void {
+  const url = new URL(currentFullUrl.value)
+  url.searchParams.set(key, value)
+  window.history.pushState("", "", url)
+  currentFullUrl.value = location.href
+}
+
+/**
+ * read query parameters
+ */
+onMounted(async () => {
+  const url = new URL(location.href)
+  if (!url.toString().includes("?")) return  // not good...
+
+  const paramCoords = url.searchParams.get("coords")
+  if (paramCoords) query.value = paramCoords
+  const paramType = url.searchParams.get("type")
+  if (paramType) store.commit("setTransportation", paramType)
+  const paramTime = url.searchParams.get("time")
+  if (paramTime) store.commit("setTime", paramTime)
+  
+  center = {
+    lat: parseFloat(query.value.replace(regexpCoords, "$1")),
+    lng: parseFloat(query.value.replace(regexpCoords, "$3")),
+  }
+  await getTimeMap()
+  map.setCenter(center)
+  map.fitBounds(makeBoundsFitted())
+})
+
+const focusedURLInput = ((e: any) => {
+  e.target.select()
 })
 </script>
 
@@ -605,6 +671,67 @@ document.addEventListener("keydown", (e) => {
     background-position: right 0.77rem center;
     background-size: 16px 12px;
   }
+}
+$balloon_border_color: #e2dedc;
+.ui_bottom_wrap {
+  position: absolute;
+  bottom: 3.7%;
+  right: 3.3%;
+  .url_box {
+    position: absolute;
+    bottom: 57.5px;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    row-gap: 7px;
+    width: 300px;
+    height: 110px;
+    padding: 1.08em 1.1em 1em;
+    background-color: #fff;
+    border: solid 1px $balloon_border_color;
+    border-radius: 7px;
+    box-shadow: 1px 1px 5px 0px rgba($color: #000000, $alpha: 0.21);
+    z-index: 130;
+    .input {
+      width: 100%;
+      padding: 5px 9px;
+      border: solid 1px #e4e4e4;
+      border-radius: 6px;
+      background-color: #f6f8fa;
+      color: #37342f;
+      font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;
+      vertical-align: middle;
+      outline: none;
+      appearance: none;
+    }
+    .description {
+      line-height: 1.1;
+      span {
+        color: #7c7877;
+        font-size: 0.8em;
+      }
+    }
+  }
+  button {
+    font-size: 1.03em;
+    font-weight: 700;
+    border-radius: 7px;
+    box-shadow: 2px 2px 4px 0px rgba($color: #000000, $alpha: 0.19);
+    .dropdown-caret {
+      display: inline-block;
+      width: 0;
+      height: 0;
+      margin: 0 0 1px 3.5px;
+      vertical-align: middle;
+      content: "";
+      border-style: solid;
+      border-width: 4px 4px 0;
+      border-right-color: transparent;
+      border-bottom-color: transparent;
+      border-left-color: transparent;
+    }
   }
 }
 svg {
@@ -613,6 +740,28 @@ svg {
   margin: auto;
   width: 1.3em;
   cursor: pointer;
+}
+.balloon_menu {
+  &::before {
+    position: absolute;
+    display: inline-block;
+    content: "";
+    bottom: -16px;
+    right: 25px;
+    left: auto;
+    border: 8px solid transparent;
+    border-top-color: $balloon_border_color;
+  }
+  &::after {
+    position: absolute;
+    display: inline-block;
+    content: "";
+    bottom: -13.6px;
+    right: 25.6px;
+    left: auto;
+    border: 7px solid transparent;
+    border-top-color: #ffffff;
+  }
 }
 </style>
 <style lang="scss">
