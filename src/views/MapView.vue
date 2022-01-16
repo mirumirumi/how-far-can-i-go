@@ -38,8 +38,8 @@
         <li v-for="i in 30" :value="i" :key="i" @click="selectTime(i)" :id="`min${ (200 + i).toString() }`" :tabindex="200 + i" @keydown="selectByKeys">{{ i }} min</li>
       </ul>
     </div>
-    <div class="side_menu">
-      <button type="button" id="side_menu" class="input" @click="openSideMenu">
+    <div class="side_menu_button">
+      <button type="button" id="side_menu_button" class="input" @click="openSideMenu">
         <SvgIcon icon="chevron-left"></SvgIcon>
       </button>
     </div>
@@ -56,6 +56,13 @@
       <span class="dropdown-caret"></span>
     </button>
   </div>
+  <transition name="slide">
+    <div class="side_menu_wrap" v-if="isOpenSideMenu">
+      <div class="close">
+        <SvgIcon icon="close" @click="closeSelections" />
+      </div>
+    </div>
+  </transition>
   <teleport to="body">
     <TransparentBack v-if="isOpenBack" @click="closeSelections" />
     <TransparentBack v-if="isOpenBackForGeo" @click="closeSelections" :zIndex="11" />
@@ -475,7 +482,7 @@ const selectByKeys = ((e: KeyboardEvent) => {
 
 const openSideMenu = (() => {
   isOpenSideMenu.value = true
-  isOpenBack.value = false
+  isOpenBack.value = true
 })
 
 const closeSelections = (() => {
@@ -661,7 +668,7 @@ const focusedURLInput = ((e: any) => {
       }
     }
   }
-  .side_menu {
+  .side_menu_button {
     position: absolute;
     right: 0;
     margin: 0;
@@ -781,6 +788,22 @@ $balloon_border_color: #e2dedc;
       border-bottom-color: transparent;
       border-left-color: transparent;
     }
+  }
+}
+.side_menu_wrap {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 350px;
+  height: 100vh;
+  background-color: #ffffff;
+  box-shadow: -3px 0 2.5px 0 rgba($color: #000000, $alpha: 0.23);
+  z-index: 14;
+  svg {
+    position: absolute;
+    top: 10px;
+    bottom: auto;
+    right: 13px;
   }
 }
 svg {
