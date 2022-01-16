@@ -355,7 +355,7 @@ const makeReadableGeo = ((address_components: Array<any>): string => {
 const isGettingTimeMap = ref(false)
 const getTimeMap = (async () => {
   if (query.value === "") return
-  addQueryParameter("coords", query.value)
+  addQueryParameter("coords", `${ center.lat } ${ center.lng }`)
 
   isGettingTimeMap.value = true
   const request = makeRequest()
@@ -500,7 +500,7 @@ function addQueryParameter(key: string, value: string): void {
  */
 onMounted(async () => {
   const url = new URL(location.href)
-  if (!url.toString().includes("?")) return  // not good...
+  if (!url.toString().includes("?")) return
 
   const paramCoords = url.searchParams.get("coords")
   if (paramCoords) query.value = paramCoords
@@ -508,14 +508,22 @@ onMounted(async () => {
   if (paramType) store.commit("setTransportation", paramType)
   const paramTime = url.searchParams.get("time")
   if (paramTime) store.commit("setTime", paramTime)
-  
-  center = {
-    lat: parseFloat(query.value.replace(regexpCoords, "$1")),
-    lng: parseFloat(query.value.replace(regexpCoords, "$3")),
+
+  const tempLat = parseFloat(query.value.replace(regexpCoords, "$1"))
+  const tempLng = parseFloat(query.value.replace(regexpCoords, "$3")) 
+
+  if (!isNaN(tempLat) && !isNaN(tempLng)) {
+    center = {
+      lat: tempLat,
+      lng: tempLng,
+    }
   }
+
   await getTimeMap()
-  map.setCenter(center)
-  map.fitBounds(makeBoundsFitted())
+  try {
+    map.setCenter(center)
+    map.fitBounds(makeBoundsFitted())
+  } catch {1}  // For some reason, setCenter() here gives an error only when there are no coords in the query parameters (it works fine). I couldn't figure out why, so I had no choice but to enclose it.
 })
 
 const focusedURLInput = ((e: any) => {
@@ -641,6 +649,10 @@ const focusedURLInput = ((e: any) => {
     border-radius: 29px;
     box-shadow: 2px 2px 4px 0px rgba($color: #000000, $alpha: 0.19);
     appearance: none;
+    &:focus {
+      border-color: #D9D9D9 !important;
+      box-shadow: 2px 2px 4px 0px rgba($color: #000000, $alpha: 0.19) !important;
+    }
   }
   ul {
     background-color: #fff;
