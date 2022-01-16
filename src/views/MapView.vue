@@ -38,6 +38,11 @@
         <li v-for="i in 30" :value="i" :key="i" @click="selectTime(i)" :id="`min${ (200 + i).toString() }`" :tabindex="200 + i" @keydown="selectByKeys">{{ i }} min</li>
       </ul>
     </div>
+    <div class="side_menu">
+      <button type="button" id="side_menu" class="input" @click="openSideMenu">
+        <SvgIcon icon="chevron-left"></SvgIcon>
+      </button>
+    </div>
   </div>
   <div class="ui_bottom_wrap">
     <div class="url_box balloon_menu" v-if="isOpenSaveBox">
@@ -414,6 +419,7 @@ const selectTime = (async (time: number) => {
 
 const selectingTp = ref(false)
 const selectingTime = ref(false)
+const isOpenSideMenu = ref(false)
 const isOpenBack = ref(false)
 const isOpenBackForGeo = ref(false)
 
@@ -467,10 +473,16 @@ const selectByKeys = ((e: KeyboardEvent) => {
   setTimeout(() => document.getElementById(result)?.focus(), 1)
 })
 
+const openSideMenu = (() => {
+  isOpenSideMenu.value = true
+  isOpenBack.value = false
+})
+
 const closeSelections = (() => {
   selectingTp.value = false
   selectingTime.value = false
   selectingGeocode.value = false
+  isOpenSideMenu.value = false
   isOpenSaveBox.value = false
   isOpenBack.value = false
   isOpenBackForGeo.value = false
@@ -546,6 +558,7 @@ const focusedURLInput = ((e: any) => {
   top: 2.3%;
   left: 2%;
   display: flex;
+  width: calc(100% - 2%);
   > * {
     display: inline-block;
     margin-right: 1.3em;
@@ -645,6 +658,21 @@ const focusedURLInput = ((e: any) => {
       &:focus {
         border-color: #D9D9D9 !important;
         box-shadow: 2px 2px 4px 0px rgba($color: #000000, $alpha: 0.19) !important;
+      }
+    }
+  }
+  .side_menu {
+    position: absolute;
+    right: 0;
+    margin: 0;
+    button {
+      padding: 0 10px 0 0;
+      min-width: 60px;
+      background-color: #fff;
+      border-radius: 29px 0 0 29px;
+      cursor: pointer;
+      svg {
+        width: 0.7em;
       }
     }
   }
