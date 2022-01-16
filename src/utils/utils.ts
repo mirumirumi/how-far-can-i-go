@@ -21,7 +21,7 @@ export const tabindexToID = ((tabindex: number, maxLength = 0): string => {
   } else if (tabindex === 230 || tabindex === 231) {
     result = "min230"
   } else if (tabindex === 300) {
-    result = "geo1"
+    result = "search"
   } else if (301 <= tabindex && tabindex < 301 + maxLength) {
     result = "geo" + tabindex.toString()
   } else if (301 + maxLength <= tabindex) {

@@ -2,7 +2,7 @@
   <div id="map"></div>
   <div class="ui_wrap">
     <div class="search">
-      <input type="text" id="search" class="input" autocomplete="off" placeholder="Search for..." v-model="query" @keydown="enterCoords">
+      <input type="text" id="search" class="input" autocomplete="off" placeholder="Search for..." v-model="query" @keydown="keydownForGeo">
       <SvgIcon icon="search" @click="geocode" />
       <ul v-show="selectingGeocode && !isInputting">
         <li v-for="g, i in geocodeResults" @click="selectGeocode(i)" :key="g" @keydown="selectByKeys" :tabindex="301 + i" :id="`geo${ (301 + i).toString() }`">{{ makeReadableGeo(g.address_components) }}</li>
@@ -271,11 +271,16 @@ watch(query, async (newQuery: string) => {
   timerID = setTimeout(geocode, 777)
 })
 
-const enterCoords = (async (e: KeyboardEvent) => {
+const keydownForGeo = (async (e: KeyboardEvent) => {
   if (e.key === "Enter" && query.value.search(regexpCoords) !== -1) {
     query.value = `${ center.lat } ${ center.lng }`
     execWhenQueryIsCoords()
     return
+  }
+  if (e.key === "ArrowDown" && !isInputting.value) {
+    setTimeout(() => {
+      document.getElementById("geo301")?.focus()
+    }, 1)  // https://bit.ly/321pc3k
   }
 })
 
@@ -309,9 +314,6 @@ const geocode = (async () => {
     geocodeResults.value.push(r)
   })
   isInputting.value = false
-  setTimeout(() => {
-    document.getElementById("geo301")?.focus()
-  }, 1)  // https://bit.ly/321pc3k
   return
 })
 
