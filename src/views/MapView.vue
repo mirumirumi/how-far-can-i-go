@@ -61,6 +61,38 @@
       <div class="close">
         <SvgIcon icon="close" @click="closeSelections" />
       </div>
+      <div class="settings">
+        <div class="setting_item">
+          <div class="setting_title">
+            <span>Speed</span>
+            <span class="help">
+              <SvgIcon icon="help" />
+            </span>
+          </div>
+          <div class="setting_content">
+            <input type="number" min="40" max="4000" placeholder="80"><span class="unit">[m] / 1[min]</span>
+          </div>
+        </div>
+        <div class="setting_item">
+          <div class="setting_title">
+            <span>Theme</span>
+          </div>
+          <div class="setting_content">
+            <div class="radio_set">
+              <input class="" type="radio" id="light" name="theme">
+              <label class="" for="light">Light</label>
+            </div>
+            <div class="radio_set">
+              <input class="" type="radio" id="dark" name="theme">
+              <label class="" for="dark">Dark</label>
+            </div>
+            <div class="radio_set">
+              <input class="" type="radio" id="os_sync" name="theme" checked>
+              <label class="" for="os_sync">OS Sync</label>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </transition>
   <teleport to="body">
