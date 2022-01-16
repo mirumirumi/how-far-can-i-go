@@ -53,7 +53,7 @@
   </div>
   <teleport to="body">
     <TransparentBack v-if="isOpenBack" @click="closeSelections" />
-    <TransparentBack v-if="isOpenBackGeo" @click="closeSelections" :zIndex="11" />
+    <TransparentBack v-if="isOpenBackForGeo" @click="closeSelections" :zIndex="11" />
     <transition name="fade">
       <LoadingBack v-if="isGettingTimeMap" />
     </transition>
@@ -309,7 +309,7 @@ const geocode = (async () => {
   }
   console.log(res?.data)
   selectingGeocode.value = true
-  isOpenBackGeo.value = true
+  isOpenBackForGeo.value = true
   res?.data.results.forEach((r: any) => {
     geocodeResults.value.push(r)
   })
@@ -415,7 +415,7 @@ const selectTime = (async (time: number) => {
 const selectingTp = ref(false)
 const selectingTime = ref(false)
 const isOpenBack = ref(false)
-const isOpenBackGeo = ref(false)
+const isOpenBackForGeo = ref(false)
 
 const select = (type: string) => {
   if (!isOpenBack.value) {
@@ -473,7 +473,7 @@ const closeSelections = (() => {
   selectingGeocode.value = false
   isOpenSaveBox.value = false
   isOpenBack.value = false
-  isOpenBackGeo.value = false
+  isOpenBackForGeo.value = false
 })
 
 document.addEventListener("keydown", (e) => {
@@ -563,7 +563,7 @@ const focusedURLInput = ((e: any) => {
     }
     svg {
       right: 1.5em;
-      z-index: 7;
+      z-index: 13;
     }
     ul {
       width: 90%;
