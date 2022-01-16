@@ -621,6 +621,10 @@ const focusedURLInput = ((e: any) => {
         left: 1.6em;
         height: 1.1em;
       }
+      &:focus {
+        border-color: #D9D9D9 !important;
+        box-shadow: 2px 2px 4px 0px rgba($color: #000000, $alpha: 0.19) !important;
+      }
     }
     li {
       padding-top: 0.5em;
@@ -638,6 +642,10 @@ const focusedURLInput = ((e: any) => {
       padding-left: 9px;
       text-align: center;
       cursor: pointer;
+      &:focus {
+        border-color: #D9D9D9 !important;
+        box-shadow: 2px 2px 4px 0px rgba($color: #000000, $alpha: 0.19) !important;
+      }
     }
   }
   .input {
@@ -653,10 +661,6 @@ const focusedURLInput = ((e: any) => {
     border-radius: 29px;
     box-shadow: 2px 2px 4px 0px rgba($color: #000000, $alpha: 0.19);
     appearance: none;
-    &:focus {
-      border-color: #D9D9D9 !important;
-      box-shadow: 2px 2px 4px 0px rgba($color: #000000, $alpha: 0.19) !important;
-    }
   }
   ul {
     background-color: #fff;
