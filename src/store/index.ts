@@ -4,7 +4,7 @@ import { Transportation } from '@/utils/defines'
 
 export interface State {
   query: string,
-  transportation: Transportation,
+  transportation: Transportation | string,
   time: number,
 }
 

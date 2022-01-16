@@ -18,15 +18,15 @@
         {{ store.state.transportation.charAt(0).toUpperCase() + store.state.transportation.slice(1) }}
       </button>
       <ul v-show="selectingTp && isOpenBack">
-        <li @click="selectTp(`walking`)" :class="{highlight: condSelected.includes(`walking`)}" id="walking" tabindex="101" @keydown="selectByKeys">
+        <li @click="selectTp(`walking`)" id="walking" tabindex="101" @keydown="selectByKeys">
           <SvgIcon icon="walking" />
           Walking
         </li>
-        <li @click="selectTp(`cycling`)" :class="{highlight: condSelected.includes(`cycling`)}" id="cycling" tabindex="102" @keydown="selectByKeys">
+        <li @click="selectTp(`cycling`)" id="cycling" tabindex="102" @keydown="selectByKeys">
           <SvgIcon icon="cycling" />
           Cycling
         </li>
-        <li @click="selectTp(`driving`)" :class="{highlight: condSelected.includes(`driving`)}" id="driving" tabindex="103" @keydown="selectByKeys">
+        <li @click="selectTp(`driving`)" id="driving" tabindex="103" @keydown="selectByKeys">
           <SvgIcon icon="driving" />
           Driving
         </li>
@@ -35,7 +35,7 @@
     <div class="time">
       <button type="button" id="time" class="input select_button" @click="select(`time`)" v-html="`${ store.state.time } min`"></button>
       <ul v-show="selectingTime && isOpenBack">
-        <li v-for="i in 30" :value="i" :key="i" @click="selectTime(i)" :class="{highlight: condSelected.includes(i)}" :id="`min${ (200 + i).toString() }`" :tabindex="200 + i" @keydown="selectByKeys">{{ i }} min</li>
+        <li v-for="i in 30" :value="i" :key="i" @click="selectTime(i)" :id="`min${ (200 + i).toString() }`" :tabindex="200 + i" @keydown="selectByKeys">{{ i }} min</li>
       </ul>
     </div>
   </div>
@@ -60,7 +60,7 @@ import TransparentBack from "@/components/modules/TransparentBack.vue"
 import LoadingBack from "@/components/modules/LoadingBack.vue"
 import SvgIcon from "@/components/parts/SvgIcon.vue"
 import LoadSpinner from "@/components/parts/LoadSpinner.vue"
-import { delay, tabindexToID } from "@/utils/utils"
+import { tabindexToID } from "@/utils/utils"
 
 const store = useStore()
 const toast: any = inject("toast")
@@ -377,10 +377,7 @@ function makeRequest(): any {
 /**
  * ui
  */
-const condSelected = ref(["walking", 10])
-
 const selectTp = (async (type: string) => {
-  condSelected.value[0] = type
   store.commit("setTransportation", type)
   closeSelections()
   await getTimeMap()
@@ -388,7 +385,6 @@ const selectTp = (async (type: string) => {
 })
 
 const selectTime = (async (time: number) => {
-  condSelected.value[1] = time
   store.commit("setTime", time)
   closeSelections()
   await getTimeMap()
@@ -609,8 +605,6 @@ document.addEventListener("keydown", (e) => {
     background-position: right 0.77rem center;
     background-size: 16px 12px;
   }
-  .highlight {
-    background-color: #eaeaea;
   }
 }
 svg {
