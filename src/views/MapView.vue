@@ -53,6 +53,7 @@
   </div>
   <teleport to="body">
     <TransparentBack v-if="isOpenBack" @click="closeSelections" />
+    <TransparentBack v-if="isOpenBackGeo" @click="closeSelections" :zIndex="11" />
     <transition name="fade">
       <LoadingBack v-if="isGettingTimeMap" />
     </transition>
@@ -303,6 +304,7 @@ const geocode = (async () => {
   }
   console.log(res?.data)
   selectingGeocode.value = true
+  isOpenBackGeo.value = true
   res?.data.results.forEach((r: any) => {
     geocodeResults.value.push(r)
   })
@@ -411,6 +413,7 @@ const selectTime = (async (time: number) => {
 const selectingTp = ref(false)
 const selectingTime = ref(false)
 const isOpenBack = ref(false)
+const isOpenBackGeo = ref(false)
 
 const select = (type: string) => {
   if (!isOpenBack.value) {
@@ -468,6 +471,7 @@ const closeSelections = (() => {
   selectingGeocode.value = false
   isOpenSaveBox.value = false
   isOpenBack.value = false
+  isOpenBackGeo.value = false
 })
 
 document.addEventListener("keydown", (e) => {
@@ -553,6 +557,7 @@ const focusedURLInput = ((e: any) => {
       width: 100%;
       padding-right: 3em;
       font-weight: normal;
+      z-index: 12;
     }
     svg {
       right: 1.5em;
@@ -633,9 +638,6 @@ const focusedURLInput = ((e: any) => {
       cursor: pointer;
     }
   }
-  .transportation, .time {
-    z-index: 130;
-  }
   .input {
     min-width: 90px;
     height: 46px;
@@ -667,6 +669,7 @@ const focusedURLInput = ((e: any) => {
       position: relative;
       text-align: center;
       cursor: pointer;
+      z-index: 130;
       &:hover {
         background-color: #eaeaea;
       }

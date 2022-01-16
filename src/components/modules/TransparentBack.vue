@@ -3,6 +3,15 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
+
+const p = withDefaults(defineProps<{
+  zIndex?: number
+}>(), {
+  zIndex: 13
+})
+
+const zIndex = ref(p.zIndex)
 </script>
 
 <style lang="scss" scoped>
@@ -12,7 +21,7 @@
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: 13;
+  z-index: v-bind(zIndex);
   display: block;
   cursor: default;
   content: " ";
