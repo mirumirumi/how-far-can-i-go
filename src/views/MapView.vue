@@ -548,8 +548,7 @@ const saveMap = (() => {
 function addQueryParameter(key: string, value: string): void {
   const url = new URL(currentFullUrl.value)
   url.searchParams.set(key, value)
-  window.history.pushState("", "", url)
-  currentFullUrl.value = location.href
+  currentFullUrl.value = url.toString()
 }
 
 /**
