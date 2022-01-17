@@ -64,13 +64,33 @@
       <div class="settings">
         <div class="setting_item">
           <div class="setting_title">
-            <span>Speed</span>
-            <span class="help">
-              <SvgIcon icon="help" />
+            <span>
+              Walking Speed
+              <!-- <span class="help" @click="help(`walking_speed`)"> -->
+              <span class="help">
+                <SvgIcon icon="help" />
+              </span>
             </span>
           </div>
           <div class="setting_content">
-            <input type="number" min="40" max="4000" placeholder="80"><span class="unit">[m] / 1[min]</span>
+            <input type="number" min="40" max="4000" value="80" class="number_input"><span class="unit">[m] / <span style="font-size: 1.3em; margin: 0 0.2em; padding: 0; vertical-align: baseline;">1</span>[min]</span>
+            <transition name="">
+              <!-- <div class="help_balloon" v-if="isShownHelpWalkingSpeed"> -->
+              <div class="help_balloon">
+                <div class="speed_set">
+                  <SvgIcon icon="slow" />
+                  <div class="text">&nbsp;60m/min</div>
+                </div>
+                <div class="speed_set">
+                  <SvgIcon icon="standard" />
+                  <div class="text">&nbsp;80m/min</div>
+                </div>
+                <div class="speed_set">
+                  <SvgIcon icon="fast" />
+                  <div class="text" style="margin-left: -3px;">100m/min</div>
+                </div>
+              </div>
+            </transition>
           </div>
         </div>
         <div class="setting_item">
@@ -93,6 +113,10 @@
           </div>
         </div>
       </div>
+      <ul class="links">
+        <li><button type="button" style="display: inline;">Privacy</button></li>
+        <li><button type="button" style="display: inline;">Terms</button></li>
+      </ul>
     </div>
   </transition>
   <teleport to="body">
@@ -585,6 +609,17 @@ onMounted(async () => {
 const focusedURLInput = ((e: any) => {
   e.target.select()
 })
+
+/**
+ * side menu
+ */
+// const isShownHelpWalkingSpeed = ref(false)
+// const help = ((content: string) => {
+//   if (content === "walking_speed") {
+//     isShownHelpWalkingSpeed.value = !isShownHelpWalkingSpeed.value
+//   }
+// })
+
 </script>
 
 <style lang="scss" scoped>
@@ -827,14 +862,181 @@ $balloon_border_color: #e2dedc;
   right: 0;
   width: 350px;
   height: 100vh;
+  padding: 1em 3em;
   background-color: #ffffff;
   box-shadow: -3px 0 2.5px 0 rgba($color: #000000, $alpha: 0.23);
   z-index: 14;
-  svg {
+  .close {
+    height: 40px;
+    svg {
+      position: absolute;
+      top: 10px;
+      bottom: auto;
+      right: 13px;
+    }
+  }
+  .settings {
+    .setting_item {
+      margin-bottom: 1.9em;
+      padding-bottom: 2.15em;
+      border-bottom: solid 1.5px #dedede;
+      .setting_title{
+        margin-bottom: 1.3em;
+        span {
+          font-size: 1.03em;
+          font-weight: bold;
+        }
+      }
+      .help {
+        position: relative;
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        svg {
+          top: 6.7px;
+          bottom: 0;
+          right: auto;
+          left: 0.5em;
+          width: 0.87em;
+        }
+      }
+      .setting_content {
+        position: relative;
+        padding-left: 40px;
+        .number_input {
+          width: 4.7em;
+          margin: 0 1em 0 0;
+          padding: 0 0 4px;
+          border: none;
+          border-bottom: solid 1.7px #e3e3e3;
+          background-color: transparent;
+          color: #4e4e4e;
+          font-size: 1.1em;
+          font-weight: bold;
+          outline: none;
+          appearance: none;
+          text-align: center;
+          transition: 0.1s all ease-out;
+          &::-webkit-outer-spin-button,
+          &::-webkit-inner-spin-button {
+            appearance: none;
+          }
+          input[type=number] {  // Firefox
+            -moz-appearance: textfield;
+          }
+          &:focus {
+            padding: 0 0 3.4px;
+            border-color: #fa6e3d;
+            border-width: 2.3px;
+          }
+        }
+        .unit {
+          display: inline-block;
+          padding-bottom: 3px;
+          font-size: 0.8em;
+          color: #818181;
+          vertical-align: bottom;
+        }
+        .radio_set {
+          margin-bottom: 1px;
+          input {
+            width: 18px;
+            height: 18px;
+            margin: 0.333em 0.9em 0 0;
+            vertical-align: top;
+            border: 1.5px solid #c2c2c2;
+            border-radius: 50%;
+            background-color: #ffffff;
+            appearance: none;
+            outline: 0;
+            &:checked {
+              border-color: $primary;
+              background-color: $primary;
+              background-image: url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'-4 -4 8 8\'%3e%3ccircle r=\'2\' fill=\'%23fff\'/%3e%3c/svg%3e');
+            }
+            &:focus {
+              box-shadow: 0 0 0 0.25rem rgba(242, 101, 11, 0.37)
+            }
+          }
+          label {
+            line-height: 1.7;
+          }
+        }
+        .help_balloon {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: -172px;
+          // display: flex;
+          display: none;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          row-gap: 1em;
+          width: 199px;
+          height: 133px;
+          margin: auto;
+          padding: 13px 0 13px 26px;
+          border-radius: 7px;
+          background-color: #fff;
+          box-shadow: 2px 2px 4px 0px rgba(0,0,0, 0.19);
+          > svg {
+            top: 5px;
+            bottom: auto;
+            right: 10px;
+            width: 0.8em;
+          }
+          .speed_set {
+            position: relative;
+            svg {
+              left: -2.5em;
+              height: 1.6em;
+            }
+            .text {
+              font-weight: bold;
+            }
+          }
+          &::before {
+            position: absolute;
+            display: inline-block;
+            content: "";
+            right: -22px;
+            border: 10px solid transparent;
+            border-left-color: $balloon_border_color;
+          }
+          &::after {
+            position: absolute;
+            display: inline-block;
+            content: "";
+            right: -20px;
+            border: 10.9px solid transparent;
+            border-left-color: #ffffff;
+          }
+        }
+      }
+    }
+  }
+  ul.links {
     position: absolute;
-    top: 10px;
-    bottom: auto;
-    right: 13px;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    li {
+      display: inline;
+      margin: auto 0.9em;
+      button {
+        display: inline;
+        color: #BFBFBF;
+        font-size: 1em;
+        font-weight: bold;
+        border: none;
+        background: none;
+        appearance: none;
+        outline: 0;
+        cursor: pointer;
+      }
+    }
   }
 }
 svg {
@@ -844,12 +1046,15 @@ svg {
   width: 1.3em;
   cursor: pointer;
 }
+.help:hover .help_balloon {
+  display: flex !important;
+}
 .balloon_menu {
   &::before {
     position: absolute;
     display: inline-block;
     content: "";
-    bottom: -16px;
+    bottom: -16.1px;
     right: 25px;
     left: auto;
     border: 8px solid transparent;
@@ -859,8 +1064,8 @@ svg {
     position: absolute;
     display: inline-block;
     content: "";
-    bottom: -13.6px;
-    right: 25.6px;
+    bottom: -13.5px;
+    right: 26px;
     left: auto;
     border: 7px solid transparent;
     border-top-color: #ffffff;
@@ -875,4 +1080,3 @@ svg {
   display: none !important;
 }
 </style>
-
