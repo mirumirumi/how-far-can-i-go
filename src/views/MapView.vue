@@ -97,16 +97,16 @@
           </div>
           <div class="setting_content">
             <div class="radio_set">
-              <input class="" type="radio" id="light" value="light" name="theme" @change="selectTheme" v-model="themeChecked" :checked="themeChecked === `light`">
-              <label class="" for="light">Light</label>
+              <input type="radio" id="light" value="light" name="theme" @change="selectTheme" v-model="themeChecked" :checked="themeChecked === `light`">
+              <label for="light">Light</label>
             </div>
             <div class="radio_set">
-              <input class="" type="radio" id="dark" value="dark" name="theme" @change="selectTheme" v-model="themeChecked" :checked="themeChecked === `dark`">
-              <label class="" for="dark">Dark</label>
+              <input type="radio" id="dark" value="dark" name="theme" @change="selectTheme" v-model="themeChecked" :checked="themeChecked === `dark`">
+              <label for="dark">Dark</label>
             </div>
             <div class="radio_set">
-              <input class="" type="radio" id="os_sync" value="os_sync" name="theme" @change="selectTheme" v-model="themeChecked" :checked="themeChecked === `os_sync`">
-              <label class="" for="os_sync">OS Sync</label>
+              <input type="radio" id="os_sync" value="os_sync" name="theme" @change="selectTheme" v-model="themeChecked" :checked="themeChecked === `os_sync`">
+              <label for="os_sync">OS Sync</label>
             </div>
           </div>
         </div>
@@ -304,11 +304,12 @@ onMounted(() => {
 
 function shouldDarkMode(): boolean {
   return (localStorage.getItem("theme") === "dark" ||
-        ((localStorage.getItem("theme") === "os") || (!localStorage.getItem("theme"))) && window.matchMedia("(prefers-color-scheme: dark)").matches)
+        ((localStorage.getItem("theme") === "os_sync") || (!localStorage.getItem("theme"))) && window.matchMedia("(prefers-color-scheme: dark)").matches)
 }
 
 const selectTheme = (() => {
   const theme = themeChecked.value
+  localStorage.setItem("theme", theme)
   switch (theme) {
     case "light":
       map.setOptions({ "styles": null })
@@ -320,7 +321,6 @@ const selectTheme = (() => {
       map.setOptions({ "styles": shouldDarkMode() ? darkStyle : null })
       break
   }
-  localStorage.setItem("theme", theme)
 })
 
 /**
