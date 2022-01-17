@@ -97,15 +97,15 @@
           </div>
           <div class="setting_content">
             <div class="radio_set">
-              <input class="" type="radio" id="light" name="theme">
+              <input class="" type="radio" id="light" value="light" name="theme" @change="selectTheme" v-model="themeChecked" :checked="themeChecked === `light`">
               <label class="" for="light">Light</label>
             </div>
             <div class="radio_set">
-              <input class="" type="radio" id="dark" name="theme">
+              <input class="" type="radio" id="dark" value="dark" name="theme" @change="selectTheme" v-model="themeChecked" :checked="themeChecked === `dark`">
               <label class="" for="dark">Dark</label>
             </div>
             <div class="radio_set">
-              <input class="" type="radio" id="os_sync" name="theme" checked>
+              <input class="" type="radio" id="os_sync" value="os_sync" name="theme" @change="selectTheme" v-model="themeChecked" :checked="themeChecked === `os_sync`">
               <label class="" for="os_sync">OS Sync</label>
             </div>
           </div>
@@ -131,7 +131,7 @@ import { inject, onMounted, ref, watch } from "vue"
 import { useStore } from "@/store"
 import axios from "axios"
 import { Loader } from "@googlemaps/js-api-loader"
-import { LatLng, SystemThemeConfig } from "@/utils/defines"
+import { LatLng } from "@/utils/defines"
 import { darkStyle } from "@/utils/darkStyle"
 import TimeMapRequest from "@/utils/TimeMapRequest"
 import { apiKeyGoogle, appId, apiKeyTT } from "@/secrets/secrets"
@@ -295,15 +295,33 @@ function getCountryDefaultPosition(): LatLng {
 /**
  * theme
  */
+const themeChecked = ref("")
+
+onMounted(() => {
+  themeChecked.value = localStorage.getItem("theme") ?? "os_sync"
+
+})
+
 function shouldDarkMode(): boolean {
-  return !window.matchMedia("(prefers-color-scheme: dark)").matches
-  // const config = getSystemThemeConfig()
-  // return config != SystemThemeConfig.LIGHT ? true : false
+  return (localStorage.getItem("theme") === "dark" ||
+        ((localStorage.getItem("theme") === "os") || (!localStorage.getItem("theme"))) && window.matchMedia("(prefers-color-scheme: dark)").matches)
 }
 
-// function getSystemThemeConfig(): SystemThemeConfig {
-//   return SystemThemeConfig.LIGHT
-// }
+const selectTheme = (() => {
+  const theme = themeChecked.value
+  switch (theme) {
+    case "light":
+      map.setOptions({ "styles": null })
+      break
+    case "dark":
+      map.setOptions({ "styles": darkStyle })
+      break
+    case "os_sync":
+      map.setOptions({ "styles": shouldDarkMode() ? darkStyle : null })
+      break
+  }
+  localStorage.setItem("theme", theme)
+})
 
 /**
  * geocoding
@@ -422,6 +440,7 @@ const makeReadableGeo = ((address_components: Array<any>): string => {
  * time map
  */
 const isGettingTimeMap = ref(false)
+
 const getTimeMap = (async () => {
   if (query.value === "") return
   addQueryParameter("coords", `${ center.lat } ${ center.lng }`)
@@ -557,6 +576,7 @@ document.addEventListener("keydown", (e) => {
  */
 const currentFullUrl = ref(location.href)
 const isOpenSaveBox = ref(false)
+
 const saveMap = (() => {
   const url = new URL(currentFullUrl.value)
   if (!url.searchParams.get("coords")) addQueryParameter("coords", `${ center.lat } ${ center.lng }`)
@@ -617,6 +637,7 @@ const focusedURLInput = ((e: any) => {
  * side menu
  */
 const walkingSpeed = ref(store.state.walkingSpeed)
+
 const validateSpeed = (() => {
   if (walkingSpeed.value < 40) {
     walkingSpeed.value = 40
@@ -955,6 +976,7 @@ $balloon_border_color: #e2dedc;
             background-color: #ffffff;
             appearance: none;
             outline: 0;
+            transition: 0.13s all ease;
             &:checked {
               border-color: $primary;
               background-color: $primary;
