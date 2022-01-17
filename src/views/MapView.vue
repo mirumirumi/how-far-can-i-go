@@ -66,16 +66,14 @@
           <div class="setting_title">
             <span>
               Walking Speed
-              <!-- <span class="help" @click="help(`walking_speed`)"> -->
-              <span class="help">
-                <SvgIcon icon="help" />
-              </span>
             </span>
           </div>
           <div class="setting_content">
             <input type="number" min="40" max="4000" value="80" class="number_input"><span class="unit">[m] / <span style="font-size: 1.3em; margin: 0 0.2em; padding: 0; vertical-align: baseline;">1</span>[min]</span>
+            <span class="help">
+              <SvgIcon icon="help" />
+            </span>
             <transition name="">
-              <!-- <div class="help_balloon" v-if="isShownHelpWalkingSpeed"> -->
               <div class="help_balloon">
                 <div class="speed_set">
                   <SvgIcon icon="slow" />
@@ -893,10 +891,10 @@ $balloon_border_color: #e2dedc;
         width: 18px;
         height: 18px;
         svg {
-          top: 6.7px;
+          top: 11.7px;
           bottom: 0;
           right: auto;
-          left: 0.5em;
+          left: 0.7em;
           width: 0.87em;
         }
       }
@@ -967,7 +965,6 @@ $balloon_border_color: #e2dedc;
           top: 0;
           bottom: 0;
           left: -172px;
-          // display: flex;
           display: none;
           flex-direction: column;
           justify-content: center;
@@ -1046,7 +1043,7 @@ svg {
   width: 1.3em;
   cursor: pointer;
 }
-.help:hover .help_balloon {
+.help:hover ~ .help_balloon {
   display: flex !important;
 }
 .balloon_menu {
