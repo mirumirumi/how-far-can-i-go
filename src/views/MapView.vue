@@ -69,7 +69,7 @@
             </span>
           </div>
           <div class="setting_content">
-            <input type="number" min="40" max="4000" value="80" class="number_input"><span class="unit">[m] / <span style="font-size: 1.3em; margin: 0 0.2em; padding: 0; vertical-align: baseline;">1</span>[min]</span>
+            <input type="number" min="40" max="4000" v-model="walkingSpeed" class="number_input" @change="validateSpeed"><span class="unit">[m] / <span style="font-size: 1.3em; margin: 0 0.2em; padding: 0; vertical-align: baseline;">1</span>[min]</span>
             <span class="help">
               <SvgIcon icon="help" />
             </span>
@@ -305,7 +305,6 @@ function shouldDarkMode(): boolean {
 //   return SystemThemeConfig.LIGHT
 // }
 
-
 /**
  * geocoding
  */
@@ -454,7 +453,7 @@ function makeRequest(): any {
   result.departure_searches[0].id = "mirumi.me"
   result.departure_searches[0].coords.lat = center.lat
   result.departure_searches[0].coords.lng = center.lng
-  result.departure_searches[0].travel_time = store.state.time * 60
+  result.departure_searches[0].travel_time = Math.round(store.state.time * 60 * (store.state.walkingSpeed / 80))
   result.departure_searches[0].transportation.type = store.state.transportation
   return result
 }
@@ -563,6 +562,7 @@ const saveMap = (() => {
   if (!url.searchParams.get("coords")) addQueryParameter("coords", `${ center.lat } ${ center.lng }`)
   if (!url.searchParams.get("type")) addQueryParameter("type", "walking")
   if (!url.searchParams.get("time")) addQueryParameter("time", "10")
+  if (!url.searchParams.get("speed")) addQueryParameter("speed", "80")
   isOpenSaveBox.value = true
   isOpenBack.value = true
 })
@@ -586,6 +586,11 @@ onMounted(async () => {
   if (paramType) store.commit("setTransportation", paramType)
   const paramTime = url.searchParams.get("time")
   if (paramTime) store.commit("setTime", paramTime)
+  const paramSpeed = url.searchParams.get("speed")
+  if (paramSpeed) {
+    store.commit("setWalkingSpeed", parseInt(paramSpeed))
+    walkingSpeed.value = parseInt(paramSpeed)
+  }
 
   const tempLat = parseFloat(query.value.replace(regexpCoords, "$1"))
   const tempLng = parseFloat(query.value.replace(regexpCoords, "$3")) 
@@ -611,13 +616,16 @@ const focusedURLInput = ((e: any) => {
 /**
  * side menu
  */
-// const isShownHelpWalkingSpeed = ref(false)
-// const help = ((content: string) => {
-//   if (content === "walking_speed") {
-//     isShownHelpWalkingSpeed.value = !isShownHelpWalkingSpeed.value
-//   }
-// })
-
+const walkingSpeed = ref(store.state.walkingSpeed)
+const validateSpeed = (() => {
+  if (walkingSpeed.value < 40) {
+    walkingSpeed.value = 40
+  } else if (4000 < walkingSpeed.value) {
+    walkingSpeed.value = 4000
+  }
+  store.commit("setWalkingSpeed", walkingSpeed.value)
+  addQueryParameter("speed", walkingSpeed.value.toString())
+})
 </script>
 
 <style lang="scss" scoped>

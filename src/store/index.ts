@@ -6,6 +6,7 @@ export interface State {
   query: string,
   transportation: Transportation | string,
   time: number,
+  walkingSpeed: number,
 }
 
 export const store = createStore<State>({
@@ -13,6 +14,7 @@ export const store = createStore<State>({
     query: "",
     transportation: Transportation.WALKING,
     time: 10,
+    walkingSpeed: 80,
   },
   getters: {
   },
@@ -25,6 +27,9 @@ export const store = createStore<State>({
     },
     setTime(state, time: number) {
       state.time = time
+    },
+    setWalkingSpeed(state, speed: number) {
+      state.walkingSpeed = speed
     },
   },
   actions: {
