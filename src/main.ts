@@ -12,7 +12,7 @@ const app = createApp(App)
   .use(VueAxios, axios)
 
 app.use(Toaster, {
-  position: "top-left",
+  position: "top-right",
   duration: 5555,
 }).provide('toast', app.config.globalProperties.$toast)
 app.mount('#app')

@@ -36,5 +36,4 @@ loader.load().then((google) => {
 </script>
 
 <style lang="scss" scoped>
-
 </style>

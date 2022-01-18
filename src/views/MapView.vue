@@ -154,7 +154,7 @@ onMounted(() => {
  * maps
  */
 let map: any
-let center = await getUserCurrentPosition()
+let center = getCountryDefaultPosition()
 let polygon: any
 let paths: Array<LatLng> = [{ lat: 0, lng: 0 }]
 const loader = new Loader({
@@ -162,7 +162,7 @@ const loader = new Loader({
   version: "weekly",
 })
 
-loader.load().then((google) => {
+loader.load().then(async (google) => {
   map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
     center:            center,
     zoom:              15,
@@ -250,6 +250,8 @@ loader.load().then((google) => {
     polygon = makePolygon(paths)
     polygon.setMap(map)
   }
+
+  map.setCenter(await getUserCurrentPosition())
 })
 
 function getUserCurrentPosition(): Promise<LatLng> {
