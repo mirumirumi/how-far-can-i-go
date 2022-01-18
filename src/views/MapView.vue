@@ -2,8 +2,8 @@
   <div id="map"></div>
   <div class="ui_wrap">
     <div class="search">
-      <input type="text" id="search" class="input" autocomplete="off" placeholder="Search for..." v-model="query" @keydown="keydownForGeo">
-      <SvgIcon icon="search" @click="geocode" />
+      <input type="text" id="search" class="input" autocomplete="off" placeholder="Search for..." v-model="query" @keydown="keydownForGeo" :style="attachDarkStyleUI">
+      <SvgIcon icon="search" :color="isDarkCurrent ? '#fff' : '#d2d2d2'" @click="geocode" />
       <ul v-show="selectingGeocode && !isInputting">
         <li v-for="g, i in geocodeResults" @click="selectGeocode(i)" :key="g" @keydown="selectByKeys" :tabindex="301 + i" :id="`geo${ (301 + i).toString() }`">{{ makeReadableGeo(g.address_components) }}</li>
       </ul>
@@ -13,34 +13,34 @@
       <div class="transparent_filter"></div>
     </div>
     <div class="transportation">
-      <button type="button" id="transportation" class="input select_button" @click="select(`tp`)">
-        <SvgIcon :icon="store.state.transportation" />
+      <button type="button" id="transportation" class="input select_button" @click="select(`tp`)" :style="[attachDarkStyleUI, attachDarkStyleDownArrow]">
+        <SvgIcon :icon="store.state.transportation" :color="isDarkCurrent ? '#fff' : '#4e4e4e'" />
         {{ store.state.transportation.charAt(0).toUpperCase() + store.state.transportation.slice(1) }}
       </button>
       <ul v-show="selectingTp && isOpenBack">
         <li @click="selectTp(`walking`)" id="walking" tabindex="101" @keydown="selectByKeys">
-          <SvgIcon icon="walking" />
+          <SvgIcon icon="walking" :color="'#4e4e4e'" />
           Walking
         </li>
         <li @click="selectTp(`cycling`)" id="cycling" tabindex="102" @keydown="selectByKeys">
-          <SvgIcon icon="cycling" />
+          <SvgIcon icon="cycling" :color="'#4e4e4e'" />
           Cycling
         </li>
         <li @click="selectTp(`driving`)" id="driving" tabindex="103" @keydown="selectByKeys">
-          <SvgIcon icon="driving" />
+          <SvgIcon icon="driving" :color="'#4e4e4e'" />
           Driving
         </li>
       </ul>
     </div>
     <div class="time">
-      <button type="button" id="time" class="input select_button" @click="select(`time`)" v-html="`${ store.state.time } min`"></button>
+      <button type="button" id="time" class="input select_button" @click="select(`time`)" v-html="`${ store.state.time } min`" :style="[attachDarkStyleUI, attachDarkStyleDownArrow]"></button>
       <ul v-show="selectingTime && isOpenBack">
         <li v-for="i in 30" :value="i" :key="i" @click="selectTime(i)" :id="`min${ (200 + i).toString() }`" :tabindex="200 + i" @keydown="selectByKeys">{{ i }} min</li>
       </ul>
     </div>
     <div class="side_menu_button">
-      <button type="button" id="side_menu_button" class="input" @click="openSideMenu">
-        <SvgIcon icon="chevron-left"></SvgIcon>
+      <button type="button" id="side_menu_button" class="input" @click="openSideMenu" :style="attachDarkStyleUI">
+        <SvgIcon icon="chevron-left" :color="isDarkCurrent ? '#fff' : '#4e4e4e'"></SvgIcon>
       </button>
     </div>
   </div>
@@ -51,15 +51,15 @@
         <span>You can use this URL to save the map and to share it with your friends!</span>
       </div>
     </div>
-    <button type="button" class="button fill submit" @click="saveMap">
+    <button type="button" class="button fill submit" @click="saveMap" :style="attachDarkStylePrimaryButton">
       Save or Share
       <span class="dropdown-caret"></span>
     </button>
   </div>
   <transition name="slide">
-    <div class="side_menu_wrap" v-if="isOpenSideMenu">
+    <div class="side_menu_wrap" v-if="isOpenSideMenu" :style="attachDarkStyleUI">
       <div class="close">
-        <SvgIcon icon="close" @click="closeSelections" />
+        <SvgIcon icon="close" :color="isDarkCurrent ? '#fff' : '#d5d5d5'" @click="closeSelections" />
       </div>
       <div class="settings">
         <div class="setting_item">
@@ -69,24 +69,26 @@
             </span>
           </div>
           <div class="setting_content">
-            <input type="number" min="40" max="4000" v-model="walkingSpeed" class="number_input" @change="validateSpeed"><span class="unit">[m] / <span style="font-size: 1.3em; margin: 0 0.2em; padding: 0; vertical-align: baseline;">1</span>[min]</span>
+            <input type="number" min="40" max="4000" v-model="walkingSpeed" class="number_input" @change="validateSpeed" :style="attachDarkStyleText"><span class="unit" :style="attachDarkStyleText">[m] / <span style="font-size: 1.3em; margin: 0 0.2em; padding: 0; vertical-align: baseline;">1</span>[min]</span>
             <span class="help">
-              <SvgIcon icon="help" />
+              <SvgIcon icon="help" :color="isDarkCurrent ? '#fff' : '#b3b3b3'" />
             </span>
             <transition name="">
-              <div class="help_balloon">
+              <div class="help_balloon" :style="attachDarkStyleHelp">
                 <div class="speed_set">
-                  <SvgIcon icon="slow" />
+                  <SvgIcon icon="slow" :color="isDarkCurrent ? '#fff' : '#4e4e4e'" />
                   <div class="text">&nbsp;60m/min</div>
                 </div>
                 <div class="speed_set">
-                  <SvgIcon icon="standard" />
+                  <SvgIcon icon="standard" :color="isDarkCurrent ? '#fff' : '#4e4e4e'" />
                   <div class="text">&nbsp;80m/min</div>
                 </div>
                 <div class="speed_set">
-                  <SvgIcon icon="fast" />
+                  <SvgIcon icon="fast" :color="isDarkCurrent ? '#fff' : '#4e4e4e'" />
                   <div class="text" style="margin-left: -3px;">100m/min</div>
                 </div>
+                <span class="before" :style="attachDarkStyleDisplayNone"></span>
+                <span class="after" :style="attachDarkStylePseudo"></span>
               </div>
             </transition>
           </div>
@@ -127,7 +129,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref, watch } from "vue"
+import { computed, inject, onMounted, ref, watch } from "vue"
 import { useStore } from "@/store"
 import axios from "axios"
 import { Loader } from "@googlemaps/js-api-loader"
@@ -296,10 +298,11 @@ function getCountryDefaultPosition(): LatLng {
  * theme
  */
 const themeChecked = ref("")
+const isDarkCurrent = ref(false)
 
 onMounted(() => {
   themeChecked.value = localStorage.getItem("theme") ?? "os_sync"
-
+  isDarkCurrent.value = shouldDarkMode()
 })
 
 function shouldDarkMode(): boolean {
@@ -313,12 +316,20 @@ const selectTheme = (() => {
   switch (theme) {
     case "light":
       map.setOptions({ "styles": null })
+      isDarkCurrent.value = false
       break
     case "dark":
       map.setOptions({ "styles": darkStyle })
+      isDarkCurrent.value = true
       break
     case "os_sync":
-      map.setOptions({ "styles": shouldDarkMode() ? darkStyle : null })
+      if (shouldDarkMode()) {
+        map.setOptions({ "styles": darkStyle })
+        isDarkCurrent.value = true
+      } else {
+        map.setOptions({ "styles": null })
+        isDarkCurrent.value = false
+      }
       break
   }
 })
@@ -647,6 +658,48 @@ const validateSpeed = (() => {
   store.commit("setWalkingSpeed", walkingSpeed.value)
   addQueryParameter("speed", walkingSpeed.value.toString())
 })
+
+/**
+ * dark mode styles
+ */
+const inlineStyleUI = {
+  'color': "#ffffff",
+  'background-color': "#5b5651 !important",
+  'border-color': "#433e35 !important",
+  'box-shadow': "1px 1px 2px 0px rgba(158, 124, 92, 0.19) !important",
+}
+const attachDarkStyleUI = computed(() => {
+  if (isDarkCurrent.value) return inlineStyleUI; return {}
+})
+const inlineStylePrimaryButton = {
+  'background-color': "#d35d33 !important",
+  'border-color': "#d35d33 !important",
+}
+const attachDarkStylePrimaryButton = computed(() => {
+  if (isDarkCurrent.value) return inlineStylePrimaryButton; return {}
+})
+const inlineStyleDownArrow = {
+  'background-image': "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 17'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e\") !important",
+}
+const attachDarkStyleDownArrow = computed(() => {
+  if (isDarkCurrent.value) return inlineStyleDownArrow; return {}
+})
+const inlineStyleText = { 'color': "#ffffff" }
+const attachDarkStyleText = computed(() => {
+  if (isDarkCurrent.value) return inlineStyleText; return {}
+})
+const inlineStyleHelp = { 'background-color': "#3d3935 !important" }
+const attachDarkStyleHelp = computed(() => {
+  if (isDarkCurrent.value) return inlineStyleHelp; return {}
+})
+const inlineStyleDisplayNone = { 'display': "none !important" }
+const attachDarkStyleDisplayNone = computed(() => {
+  if (isDarkCurrent.value) return inlineStyleDisplayNone; return {}
+})
+const inlineStyleHelpPseudo = { 'border-left-color': "#3d3935 !important" }
+const attachDarkStylePseudo = computed(() => {
+  if (isDarkCurrent.value) return inlineStyleHelpPseudo; return {}
+})
 </script>
 
 <style lang="scss" scoped>
@@ -787,6 +840,7 @@ const validateSpeed = (() => {
     color: #4e4e4e;
     border: solid 0.333px #D9D9D9;
     border-radius: 29px;
+    background-color: #ffffff;
     box-shadow: 2px 2px 4px 0px rgba($color: #000000, $alpha: 0.19);
     appearance: none;
   }
@@ -1023,7 +1077,7 @@ $balloon_border_color: #e2dedc;
               font-weight: bold;
             }
           }
-          &::before {
+          .before {
             position: absolute;
             display: inline-block;
             content: "";
@@ -1031,7 +1085,7 @@ $balloon_border_color: #e2dedc;
             border: 10px solid transparent;
             border-left-color: $balloon_border_color;
           }
-          &::after {
+          .after {
             position: absolute;
             display: inline-block;
             content: "";
