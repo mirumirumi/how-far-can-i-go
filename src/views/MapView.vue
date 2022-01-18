@@ -114,8 +114,8 @@
         </div>
       </div>
       <ul class="links">
-        <li><button type="button" style="display: inline;">Privacy</button></li>
-        <li><button type="button" style="display: inline;">Terms</button></li>
+        <li><button type="button" style="display: inline;" @click="openLinks(`privacy`)">Privacy</button></li>
+        <li><button type="button" style="display: inline;" @click="openLinks(`terms`)">Terms</button></li>
       </ul>
     </div>
   </transition>
@@ -124,6 +124,9 @@
     <TransparentBack v-if="isOpenBackForGeo" @click="closeSelections" :zIndex="11" />
     <transition name="fade">
       <LoadingBack v-if="isGettingTimeMap" />
+    </transition>
+    <transition name="fade">
+      <ModalLink v-if="isOpenModalLink" :link="linkTo" />
     </transition>
   </teleport>
 </template>
@@ -139,6 +142,7 @@ import { tabindexToID, shouldDarkMode, getCountryDefaultPosition } from "@/utils
 import axios from "axios"
 import TimeMapRequest from "@/utils/TimeMapRequest"
 import SvgIcon from "@/components/parts/SvgIcon.vue"
+import ModalLink from "@/components/modules/ModalLink.vue"
 import LoadSpinner from "@/components/parts/LoadSpinner.vue"
 import LoadingBack from "@/components/modules/LoadingBack.vue"
 import TransparentBack from "@/components/modules/TransparentBack.vue"
@@ -564,6 +568,10 @@ const closeSelections = (() => {
   isOpenSaveBox.value = false
   isOpenBack.value = false
   isOpenBackForGeo.value = false
+  isOpenModalLink.value = false
+  const url = new URL(location.href)
+  url.searchParams.delete("link")
+  history.pushState("", "", url)
 })
 
 document.addEventListener("keydown", (e) => {
@@ -647,6 +655,19 @@ const validateSpeed = (() => {
   addQueryParameter("speed", walkingSpeed.value.toString())
 })
 
+const isOpenModalLink = ref(false)
+const linkTo = ref("")
+
+const openLinks = ((to: string) => {
+  isOpenModalLink.value = true
+  isOpenBack.value = true
+  isOpenSideMenu.value = false
+  linkTo.value = to
+  const url = new URL(location.href)
+  url.searchParams.set("link", to)
+  history.pushState("", "", url)
+})
+
 /**
  * dark mode styles
  */
@@ -717,7 +738,7 @@ const attachDarkStylePseudo = computed(() => {
     }
     svg {
       right: 1.5em;
-      z-index: 13;
+      z-index: 12;
     }
     ul {
       width: 90%;
