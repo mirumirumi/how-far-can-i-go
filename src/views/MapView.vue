@@ -180,6 +180,7 @@ loader.load().then(async (google) => {
     styles: shouldDarkMode() ? darkStyle : null,
   })
 
+  center = await getUserCurrentPosition()
   let marker = makeMarker()
   marker.addListener("click", markerEventCallbackClick)
   marker.addListener("dragend", markerEventCallbackDragend)
@@ -255,7 +256,7 @@ loader.load().then(async (google) => {
     polygon.setMap(map)
   }
 
-  map.setCenter(await getUserCurrentPosition())
+  map.setCenter(center)
 })
 
 function getUserCurrentPosition(): Promise<LatLng> {
