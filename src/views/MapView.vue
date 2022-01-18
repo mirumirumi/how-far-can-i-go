@@ -668,6 +668,16 @@ const openLinks = ((to: string) => {
   history.pushState("", "", url)
 })
 
+onMounted(() => {
+  const url = new URL(location.href)
+  if (!url.toString().includes("?")) return
+
+  const paramLink = url.searchParams.get("link")
+  if (paramLink === "privacy" || paramLink === "terms") {
+    openLinks(paramLink)
+  }
+})
+
 /**
  * dark mode styles
  */
