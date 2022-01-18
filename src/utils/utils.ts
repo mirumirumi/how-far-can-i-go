@@ -1,3 +1,19 @@
+import { LatLng } from "./defines"
+
+export const shouldDarkMode = ((): boolean => {
+  return (localStorage.getItem("theme") === "dark" ||
+        ((localStorage.getItem("theme") === "os_sync") || (!localStorage.getItem("theme"))) && window.matchMedia("(prefers-color-scheme: dark)").matches)
+})
+
+export const getCountryDefaultPosition = ((): LatLng => {
+  // [TODO] : ...?
+  return {
+    // Tokyo Sta.
+    lat: 35.6809591,
+    lng: 139.7673068,
+  }
+})
+
 export const delay = ((msec: number): Promise<void> => {
   return new Promise((resolve) => {
     setTimeout(() => {

@@ -13,6 +13,6 @@ const app = createApp(App)
 
 app.use(Toaster, {
   position: "top-left",
-  duration: 3333,
+  duration: 5555,
 }).provide('toast', app.config.globalProperties.$toast)
 app.mount('#app')

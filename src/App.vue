@@ -1,7 +1,12 @@
 <template>
   <main class="view_wrap">
     <Suspense>
-      <router-view/>
+      <template #default>
+        <router-view/>
+      </template>
+      <template #fallback>
+        <DefaultMapView />
+      </template>
     </Suspense>
   </main>
   <TheFooter></TheFooter>
@@ -9,6 +14,7 @@
 
 <script setup lang="ts">
 import TheFooter from "@/components/layouts/TheFooter.vue"
+import DefaultMapView from "./views/DefaultMapView.vue"
 </script>
 
 <style lang="scss">

@@ -131,17 +131,17 @@
 <script setup lang="ts">
 import { computed, inject, onMounted, ref, watch } from "vue"
 import { useStore } from "@/store"
-import axios from "axios"
 import { Loader } from "@googlemaps/js-api-loader"
 import { LatLng } from "@/utils/defines"
 import { darkStyle } from "@/utils/darkStyle"
-import TimeMapRequest from "@/utils/TimeMapRequest"
 import { apiKeyGoogle, appId, apiKeyTT } from "@/secrets/secrets"
-import TransparentBack from "@/components/modules/TransparentBack.vue"
-import LoadingBack from "@/components/modules/LoadingBack.vue"
+import { tabindexToID, shouldDarkMode, getCountryDefaultPosition } from "@/utils/utils"
+import axios from "axios"
+import TimeMapRequest from "@/utils/TimeMapRequest"
 import SvgIcon from "@/components/parts/SvgIcon.vue"
 import LoadSpinner from "@/components/parts/LoadSpinner.vue"
-import { tabindexToID } from "@/utils/utils"
+import LoadingBack from "@/components/modules/LoadingBack.vue"
+import TransparentBack from "@/components/modules/TransparentBack.vue"
 
 const store = useStore()
 const toast: any = inject("toast")
@@ -285,15 +285,6 @@ function getUserCurrentPosition(): Promise<LatLng> {
   })
 }
 
-function getCountryDefaultPosition(): LatLng {
-  // [TODO] : ...?
-  return {
-    // Tokyo Sta.
-    lat: 35.6809591,
-    lng: 139.7673068,
-  }
-}
-
 /**
  * theme
  */
@@ -304,11 +295,6 @@ onMounted(() => {
   themeChecked.value = localStorage.getItem("theme") ?? "os_sync"
   isDarkCurrent.value = shouldDarkMode()
 })
-
-function shouldDarkMode(): boolean {
-  return (localStorage.getItem("theme") === "dark" ||
-        ((localStorage.getItem("theme") === "os_sync") || (!localStorage.getItem("theme"))) && window.matchMedia("(prefers-color-scheme: dark)").matches)
-}
 
 const selectTheme = (() => {
   const theme = themeChecked.value
