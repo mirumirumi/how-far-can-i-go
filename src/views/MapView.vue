@@ -134,6 +134,7 @@
 <script setup lang="ts">
 import { computed, inject, onMounted, ref, watch } from "vue"
 import { useStore } from "@/store"
+import { useI18n } from "vue-i18n"
 import { Loader } from "@googlemaps/js-api-loader"
 import { LatLng } from "@/utils/defines"
 import { darkStyle } from "@/utils/darkStyle"
@@ -148,10 +149,12 @@ import LoadingBack from "@/components/modules/LoadingBack.vue"
 import TransparentBack from "@/components/modules/TransparentBack.vue"
 
 const store = useStore()
+const { t, locale } = useI18n({ useScope: "global" })
 const toast: any = inject("toast")
 
 onMounted(() => {
   (document.querySelector("#search") as HTMLElement).focus()
+  locale.value = navigator.language
 })
 
 /**
@@ -268,7 +271,7 @@ loader.load().then(async (google) => {
 })
 
 function getUserCurrentPosition(): Promise<LatLng> {
-  let msg = "Your device was not able to obtain information about your current location."
+  let msg = t("toast.notSupportGetLocation")
   if (!navigator.geolocation) toast.error(msg)
 
   return new Promise<any>((resolve) => {  // eslint-disable-line
@@ -278,20 +281,20 @@ function getUserCurrentPosition(): Promise<LatLng> {
         lng: location.coords.longitude,
       })
     }, (e) => {
-      msg = "Failed to get information about the current location."
+      msg = t("toast.failedGetLocation")
       console.log(e.code)
       switch (e.code) {
         case 0:
-          msg += "\nThe cause is unknown."
+          msg += `${ t("toast.reason0") }`
           break
         case 1:
-          msg += "\nThe caluse is that location info acquisition was not allowed."
+          msg += `${ t("toast.reason1") }`
           break
         case 2:
-          msg += "\nThe cause of this is due to signal conditions."
+          msg += `${ t("toast.reason2") }`
           break
         case 3:
-          msg += "\nThis is a timeout error."
+          msg += `${ t("toast.reason3") }`
           break
       }
       toast.error(msg)
@@ -402,7 +405,7 @@ const geocode = (async () => {
   } catch (e) {
     console.log(e)
   }
-  console.log(res?.data)
+  // console.log(res?.data)
   selectingGeocode.value = true
   isOpenBackForGeo.value = true
   res?.data.results.forEach((r: any) => {
@@ -456,7 +459,7 @@ const isGettingTimeMap = ref(false)
 const getTimeMap = (async () => {
   if (query.value === "") return
   if (10 <= requestCount.value) {
-    toast.error("Currently, the number of requests per minute is limited to 10.")
+    toast.error(t("toast.limit"))
     return
   }
   addQueryParameter("coords", `${ center.lat } ${ center.lng }`)
@@ -477,7 +480,7 @@ const getTimeMap = (async () => {
   } catch (e) {
     console.log(e)
   }
-  console.log(res)
+  // console.log(res)
   paths = res?.data.results[0].shapes[0].shell
   requestCount.value += 1
   isGettingTimeMap.value = false

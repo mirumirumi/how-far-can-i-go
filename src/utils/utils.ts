@@ -6,7 +6,6 @@ export const shouldDarkMode = ((): boolean => {
 })
 
 export const getCountryDefaultPosition = ((): LatLng => {
-  // [TODO] : ...?
   return {
     // Tokyo Sta.
     lat: 35.6809591,
