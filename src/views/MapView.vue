@@ -155,6 +155,14 @@ onMounted(() => {
 })
 
 /**
+ * timer
+ */
+const requestCount = ref(0)
+setInterval(() => {
+  requestCount.value = 0
+}, 6000 * 10)  // 1min
+
+/**
  * maps
  */
 let map: any
@@ -447,6 +455,10 @@ const isGettingTimeMap = ref(false)
 
 const getTimeMap = (async () => {
   if (query.value === "") return
+  if (10 <= requestCount.value) {
+    toast.error("Currently, the number of requests per minute is limited to 10.")
+    return
+  }
   addQueryParameter("coords", `${ center.lat } ${ center.lng }`)
 
   isGettingTimeMap.value = true
@@ -467,6 +479,7 @@ const getTimeMap = (async () => {
   }
   console.log(res)
   paths = res?.data.results[0].shapes[0].shell
+  requestCount.value += 1
   isGettingTimeMap.value = false
   return
 })
