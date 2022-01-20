@@ -191,7 +191,10 @@ loader.load().then(async (google) => {
     styles: shouldDarkMode() ? darkStyle : null,
   })
 
-  center = await getUserCurrentPosition()
+  if (!(new URL(location.href).searchParams.get("coords"))) {
+    // Because this await in loader.load() is resolved right in the middle of gettimemap() after loading the query parameters, the evaluation of center becomes wrong. Prevent it.
+    center = await getUserCurrentPosition()
+  }
   let marker = makeMarker()
   marker.addListener("click", markerEventCallbackClick)
   marker.addListener("dragend", markerEventCallbackDragend)
