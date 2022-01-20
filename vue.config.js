@@ -1,4 +1,7 @@
 module.exports = {
+  devServer: {
+    port: 13137,
+  },
   css: {
     loaderOptions: {
       sass: {
@@ -6,7 +9,7 @@ module.exports = {
       },
     },
   },
-  publicPath: process.env.NODE_ENV === "production"
+  publicPath: process.env.NODE_ENV === "prd"
     ? "/apps/how-far-map"
     : "/",
 }
