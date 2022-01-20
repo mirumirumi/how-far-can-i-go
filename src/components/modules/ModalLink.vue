@@ -52,8 +52,8 @@ if (p.link === "privacy") {
     z-index: 14;
     overflow-y: scroll;
     .title {
-      margin-bottom: 1.1em;
-      font-size: 1.5em;
+      margin-bottom: 0.6em;
+      font-size: 1.9em;
       font-weight: bold;
       text-align: center;
     }

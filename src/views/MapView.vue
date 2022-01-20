@@ -483,7 +483,7 @@ const getTimeMap = (async () => {
   } catch (e) {
     console.log(e)
   }
-  // console.log(res)
+  console.log(res)
   paths = res?.data.results[0].shapes[0].shell
   requestCount.value += 1
   isGettingTimeMap.value = false

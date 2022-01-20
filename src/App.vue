@@ -9,11 +9,11 @@
       </template>
     </Suspense>
   </main>
-  <TheFooter></TheFooter>
+  <!-- <TheFooter></TheFooter> -->
 </template>
 
 <script setup lang="ts">
-import TheFooter from "@/components/layouts/TheFooter.vue"
+// import TheFooter from "@/components/layouts/TheFooter.vue"
 import DefaultMapView from "./views/DefaultMapView.vue"
 </script>
 
