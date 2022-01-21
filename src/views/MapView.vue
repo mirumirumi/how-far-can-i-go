@@ -10,7 +10,7 @@
       <div class="loading" v-if="isInputting">
         <LoadSpinner />
       </div>
-      <div class="transparent_filter"></div>
+      <div class="transparent_filter" :style="attachDarkStyleTransparentFilter"></div>
     </div>
     <div class="transportation">
       <button type="button" id="transportation" class="input select_button" @click="select(`tp`)" :style="[attachDarkStyleUI, attachDarkStyleDownArrow]">
@@ -739,6 +739,10 @@ const inlineStyleHelpPseudo = { 'border-left-color': "#3d3935 !important" }
 const attachDarkStylePseudo = computed(() => {
   if (isDarkCurrent.value) return inlineStyleHelpPseudo; return {}
 })
+const inlineStyleTransparentFilter = { 'background': "linear-gradient(90deg, rgba(255, 255, 255, 0), #5b5651) !important" }
+const attachDarkStyleTransparentFilter = computed(() => {
+  if (isDarkCurrent.value) return inlineStyleTransparentFilter; return {}
+})
 </script>
 
 <style lang="scss" scoped>
@@ -807,7 +811,7 @@ const attachDarkStylePseudo = computed(() => {
       width: 1em;
       height: 2em;
       background: linear-gradient(90deg, hsla(0, 0%, 100%, 0), #fff);
-      z-index: 6;
+      z-index: 12;
       pointer-events: none;
       transition: all 0.23s ease-in-out;
     }
