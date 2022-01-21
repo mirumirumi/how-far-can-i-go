@@ -77,15 +77,15 @@
               <div class="help_balloon" :style="attachDarkStyleHelp">
                 <div class="speed_set">
                   <SvgIcon icon="slow" :color="isDarkCurrent ? '#fff' : '#4e4e4e'" />
-                  <div class="text">&nbsp;60m/min</div>
+                  <div class="text">60m/min</div>
                 </div>
                 <div class="speed_set">
                   <SvgIcon icon="standard" :color="isDarkCurrent ? '#fff' : '#4e4e4e'" />
-                  <div class="text">&nbsp;80m/min</div>
+                  <div class="text">80m/min</div>
                 </div>
                 <div class="speed_set">
                   <SvgIcon icon="fast" :color="isDarkCurrent ? '#fff' : '#4e4e4e'" />
-                  <div class="text" style="margin-left: -3px;">100m/min</div>
+                  <div class="text" style="margin-left: -8px;">100m/min</div>
                 </div>
                 <span class="before" :style="attachDarkStyleDisplayNone"></span>
                 <span class="after" :style="attachDarkStylePseudo"></span>
@@ -759,6 +759,9 @@ const attachDarkStyleTransparentFilter = computed(() => {
     display: inline-block;
     margin-right: 1.3em;
     height: 46px;
+    @include mobile {
+      margin: 0 0 7px 0;
+    }
   }
   .search {
     position: relative;
@@ -769,10 +772,16 @@ const attachDarkStyleTransparentFilter = computed(() => {
       padding-right: 3em;
       font-weight: normal;
       z-index: 12;
+      @include mobile {
+        max-width: 250px;
+      }
     }
     svg {
       right: 1.5em;
       z-index: 12;
+      @include mobile {
+        left: 165px;
+      }
     }
     ul {
       width: 90%;
@@ -784,6 +793,9 @@ const attachDarkStyleTransparentFilter = computed(() => {
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow-x: hidden;
+      }
+      @include mobile {
+        margin: calc(0.6em + (46px + 7px) * 2) 0 0 10px;
       }
     }
     .loading {
@@ -800,6 +812,9 @@ const attachDarkStyleTransparentFilter = computed(() => {
       svg {
         transform: scale(1.5);
       }
+      @include mobile {
+        margin: calc(0.6em + (46px + 7px) * 2) 0 0 10px;
+      }
     }
     .transparent_filter {
       content: "";
@@ -814,6 +829,9 @@ const attachDarkStyleTransparentFilter = computed(() => {
       z-index: 12;
       pointer-events: none;
       transition: all 0.23s ease-in-out;
+      @include mobile {
+        left: 136px;
+      }
     }
     #search:focus ~ .transparent_filter {
       display: none;
@@ -835,13 +853,18 @@ const attachDarkStyleTransparentFilter = computed(() => {
         box-shadow: 2px 2px 4px 0px rgba($color: #000000, $alpha: 0.19) !important;
       }
     }
-    li {
-      padding-top: 0.5em;
-      padding-bottom: 0.5em;
-      padding-left: 1.9em;
-      svg {
-        left: 1.1em;
-        height: 1.3em;
+    ul {
+      li {
+        padding-top: 0.5em;
+        padding-bottom: 0.5em;
+        padding-left: 1.9em;
+        svg {
+          left: 1.1em;
+          height: 1.3em;
+        }
+      }
+      @include mobile {
+        margin: calc(0.6em + 46px + 7px) 0 0 10px;
       }
     }
   }
@@ -909,6 +932,11 @@ const attachDarkStyleTransparentFilter = computed(() => {
         outline: 0;
       }
     }
+    @include mobile {
+      margin: 0.6em 0 0 10px;
+      width: 50%;
+      max-height: 180px;
+    }
   }
   .select_button {
     background-color: #fff;
@@ -916,6 +944,9 @@ const attachDarkStyleTransparentFilter = computed(() => {
     background-repeat: no-repeat;
     background-position: right 0.77rem center;
     background-size: 16px 12px;
+  }
+  @include mobile {
+    flex-direction: column;
   }
 }
 $balloon_border_color: #e2dedc;
@@ -1136,6 +1167,9 @@ $balloon_border_color: #e2dedc;
             border: 10.9px solid transparent;
             border-left-color: #ffffff;
           }
+          @include mobile {
+            left: 16px;
+          }
         }
       }
     }
@@ -1161,6 +1195,10 @@ $balloon_border_color: #e2dedc;
         cursor: pointer;
       }
     }
+  }
+  @include mobile {
+    width: 300px;
+    padding: 1em 1.5em;
   }
 }
 svg {
