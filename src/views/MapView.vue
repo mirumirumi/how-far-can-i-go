@@ -1186,7 +1186,7 @@ $balloon_border_color: #e2dedc;
       button {
         display: inline;
         color: #BFBFBF;
-        font-size: 1em;
+        font-size: 0.95em;
         font-weight: bold;
         border: none;
         background: none;
