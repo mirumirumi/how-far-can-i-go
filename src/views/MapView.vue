@@ -142,6 +142,7 @@ import { darkStyle } from "@/utils/darkStyle"
 import { apiKeyGoogle, appId, apiKeyTT } from "@/secrets/secrets"
 import { tabindexToID, shouldDarkMode, getCountryDefaultPosition } from "@/utils/utils"
 import axios from "axios"
+import Cookies from "js-cookie"
 import TimeMapRequest from "@/utils/TimeMapRequest"
 import SvgIcon from "@/components/parts/SvgIcon.vue"
 import ModalLink from "@/components/modules/ModalLink.vue"
@@ -287,23 +288,30 @@ function getUserCurrentPosition(): Promise<LatLng> {
     }, (e) => {
       msg = t("toast.failedGetLocation")
       console.log(e.code)
-      switch (e.code) {
-        case 0:
-          msg += `${ t("toast.reason0") }`
-          break
-        case 1:
-          msg += `${ t("toast.reason1") }`
-          break
-        case 2:
-          msg += `${ t("toast.reason2") }`
-          break
-        case 3:
-          msg += `${ t("toast.reason3") }`
-          break
+      // switch (e.code) {
+      //   case 0:
+      //     msg += `${ t("toast.reason0") }`
+      //     break
+      //   case 1:
+      //     msg += `${ t("toast.reason1") }`
+      //     break
+      //   case 2:
+      //     msg += `${ t("toast.reason2") }`
+      //     break
+      //   case 3:
+      //     msg += `${ t("toast.reason3") }`
+      //     break
+      // }
+      if (Cookies.get("getCurrentPositionResult") === undefined) {
+        toast.error(msg)
       }
-      toast.error(msg)
+      Cookies.set("getCurrentPositionResult", "error", { expires: 365 })
       resolve(getCountryDefaultPosition())
-    }, { enableHighAccuracy: true })
+    }, { 
+      enableHighAccuracy: false,
+      timeout: 999,
+      maximumAge: 31556952000,  // 1 year
+    })
   })
 }
 
