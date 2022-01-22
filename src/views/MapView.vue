@@ -5,7 +5,8 @@
       <input type="text" id="search" class="input" autocomplete="off" placeholder="Search for..." v-model="query" @keydown="keydownForGeo" :style="attachDarkStyleUI">
       <SvgIcon icon="search" :color="isDarkCurrent ? '#fff' : '#d2d2d2'" @click="geocode" />
       <ul v-show="selectingGeocode && !isInputting">
-        <li v-for="g, i in geocodeResults" @click="selectGeocode(i)" :key="g" @keydown="selectByKeys" :tabindex="301 + i" :id="`geo${ (301 + i).toString() }`">{{ makeReadableGeo(g.address_components) }}</li>
+        <!-- <li v-for="g, i in geocodeResults" @click="selectGeocode(i)" :key="g" @keydown="selectByKeys" :tabindex="301 + i" :id="`geo${ (301 + i).toString() }`">{{ makeReadableGeo(g.address_components) }}</li> -->
+        <li v-for="g, i in geocodeResults" @click="selectGeocode(i)" :key="g" @keydown="selectByKeys" :tabindex="301 + i" :id="`geo${ (301 + i).toString() }`">{{ g.formatted_address.replace(/日本.*?\d{3}-\d{4} /gmi, "") }}</li>
       </ul>
       <div class="loading" v-if="isInputting">
         <LoadSpinner />
@@ -428,7 +429,8 @@ const selectGeocode = (async (index: number) => {
   map.setCenter(center)
   map.fitBounds(makeBoundsFitted())
 
-  const result = makeReadableGeo(geocodeResults.value[index].address_components)
+  // const result = makeReadableGeo(geocodeResults.value[index].address_components)
+  const result = geocodeResults.value[index].formatted_address.replace(/日本.*?\d{3}-\d{4} /gmi, "")
   geoSelected = result
   query.value = result
   isFormattedInput.value = true
@@ -483,7 +485,7 @@ const getTimeMap = (async () => {
   } catch (e) {
     console.log(e)
   }
-  console.log(res)
+  // console.log(res)
   paths = res?.data.results[0].shapes[0].shell
   requestCount.value += 1
   isGettingTimeMap.value = false
