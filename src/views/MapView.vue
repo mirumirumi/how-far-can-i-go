@@ -490,11 +490,19 @@ const getTimeMap = (async () => {
         "Content-Type": "application/json; charset=UTF-8",
       },
     })
-  } catch (e) {
+  } catch (e: any) {
     console.log(e)
+    if (e.response.status === 422) toast.error(t("toast.timemap_wrong_request"))
   }
   // console.log(res)
-  paths = res?.data.results[0].shapes[0].shell
+  try {
+    paths = res?.data.results[0].shapes[0].shell
+  } catch (e) {
+    console.log(e)
+    toast.error(t("toast.timemap_uncaught_error"))
+    isGettingTimeMap.value = false
+    return
+  }
   requestCount.value += 1
   isGettingTimeMap.value = false
   return

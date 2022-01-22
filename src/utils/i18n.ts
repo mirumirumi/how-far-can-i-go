@@ -8,6 +8,8 @@ export const messages = {
       reason2: "精確な情報を取得できませんでした。",
       reason3: "タイムアウトエラーです。",
       notSupportGetLocation: "お使いのデバイスでは現在地の取得ができませんでした。",
+      timemap_uncaught_error: "何かがうまくいきませんでした。問題が続く場合は状況をご連絡ください。",
+      timemap_wrong_request: "地点指定が有効ではありません。現実的な陸地でしたか？",
     }
   },
   en: {
@@ -19,6 +21,8 @@ export const messages = {
       reason2: "The cause is due to signal conditions.",
       reason3: "This is a timeout error.",
       notSupportGetLocation: "Your device was not able to obtain information about your current location.",
+      timemap_uncaught_error: "Something went wrong. If the problem persists, please contact me with the situation.",
+      timemap_wrong_request: "The point you specified is not valid. Was it a normal land area?",
     }
   },
 }
