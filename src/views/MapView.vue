@@ -167,15 +167,13 @@ onMounted(() => {
   // set locale
   locale.value = navigator.language
 
-  // // global key event detect (for search input)
-  // window.addEventListener("keydown", (e: any) => {
-  //   if (e.key === "/") {
-  //     e.preventDefault();
-  //     (document.querySelector("#search") as HTMLElement).focus()
-  //   } else {
-  //     return true
-  //   }
-  // })
+  // global key event detect (for search input)
+  document.addEventListener("keydown", (e: any) => {
+    if (e.key === "/") {
+      e.preventDefault();
+      (document.querySelector("#search") as HTMLElement).focus()
+    } else return true
+  })
 })
 
 /**
