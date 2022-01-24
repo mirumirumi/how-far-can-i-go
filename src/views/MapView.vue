@@ -143,6 +143,7 @@ import { apiKeyGoogle, appId, apiKeyTT } from "@/secrets/secrets"
 import { tabindexToID, shouldDarkMode, getCountryDefaultPosition } from "@/utils/utils"
 import axios from "axios"
 import Cookies from "js-cookie"
+import MobileDetect from "mobile-detect"
 import TimeMapRequest from "@/utils/TimeMapRequest"
 import SvgIcon from "@/components/parts/SvgIcon.vue"
 import ModalLink from "@/components/modules/ModalLink.vue"
@@ -154,8 +155,13 @@ const store = useStore()
 const { t, locale } = useI18n({ useScope: "global" })
 const toast: any = inject("toast")
 
+/**
+ * initialize
+ */
 onMounted(() => {
-  (document.querySelector("#search") as HTMLElement).focus()
+  if (! (new MobileDetect(navigator.userAgent).mobile())) {
+    (document.querySelector("#search") as HTMLElement).focus()
+  }
   locale.value = navigator.language
 })
 
