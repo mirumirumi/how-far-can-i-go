@@ -785,7 +785,7 @@ const inlineStyleHelpPseudo = { 'border-left-color': "#3d3935 !important" }
 const attachDarkStylePseudo = computed(() => {
   if (isDarkCurrent.value) return inlineStyleHelpPseudo; return {}
 })
-const inlineStyleTransparentFilter = { 'background': "linear-gradient(90deg, rgba(255, 255, 255, 0), #5b5651) !important" }
+const inlineStyleTransparentFilter = { 'background': "linear-gradient(90deg, rgba(91, 86, 81, 0), #5b5651) !important" }
 const attachDarkStyleTransparentFilter = computed(() => {
   if (isDarkCurrent.value) return inlineStyleTransparentFilter; return {}
 })
