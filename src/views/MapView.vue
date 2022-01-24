@@ -3,7 +3,10 @@
   <div class="ui_wrap">
     <div class="search">
       <input type="text" id="search" class="input" autocomplete="off" placeholder="Search for..." v-model="query" @keydown="keydownForGeo" :style="attachDarkStyleUI">
-      <SvgIcon icon="search" :color="isDarkCurrent ? '#fff' : '#d2d2d2'" @click="geocode" />
+      <div class="icons">
+        <SvgIcon icon="search" :color="isDarkCurrent ? '#fff' : '#d2d2d2'" @click="geocode" />
+        <SvgIcon icon="close"  :color="isDarkCurrent ? '#fff' : '#d2d2d2'" @click="purgeQuery" />
+      </div>
       <ul v-show="selectingGeocode && !isInputting">
         <!-- <li v-for="g, i in geocodeResults" @click="selectGeocode(i)" :key="g" @keydown="selectByKeys" :tabindex="301 + i" :id="`geo${ (301 + i).toString() }`">{{ makeReadableGeo(g.address_components) }}</li> -->
         <li v-for="g, i in geocodeResults" @click="selectGeocode(i)" :key="g" @keydown="selectByKeys" :tabindex="301 + i" :id="`geo${ (301 + i).toString() }`">{{ g.formatted_address.replace(/日本.*?\d{3}-\d{4} /gmi, "") }}</li>
@@ -60,7 +63,7 @@
   <transition name="slide">
     <div class="side_menu_wrap" v-if="isOpenSideMenu" :style="attachDarkStyleUI">
       <div class="close">
-        <SvgIcon icon="close" :color="isDarkCurrent ? '#fff' : '#d5d5d5'" @click="closeSelections" />
+        <SvgIcon icon="close" :color="isDarkCurrent ? '#fff' : '#d5d5d5'" @click="closeSelections" style="width: 1.1em" />
       </div>
       <div class="settings">
         <div class="setting_item">
@@ -484,6 +487,11 @@ const makeReadableGeo = ((address_components: Array<any>): string => {
   return `${ address_components[0].short_name } : ${ names === "" ? "日本" : names }`
 })
 
+const purgeQuery = (() => {
+  query.value = "";
+  (document.querySelector("#search") as HTMLElement).focus()
+})
+
 /**
  * time map
  */
@@ -803,22 +811,40 @@ const attachDarkStyleTransparentFilter = computed(() => {
   }
   .search {
     position: relative;
-    width: 300px;
+    width: 333px;
     input {
       position: relative;
       width: 100%;
-      padding-right: 3em;
+      padding-right: 4.9em;
       font-weight: normal;
       z-index: 12;
       @include mobile {
         max-width: 250px;
       }
     }
-    svg {
-      right: 1.5em;
-      z-index: 12;
+    .icons {
+      position: absolute;
+      display: flex;
+      justify-content: space-between;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      right: 1em;
+      width: 55px;
       @include mobile {
-        left: 165px;
+        left: 100px;
+      }
+      svg {
+        position: static;
+        // right: 1.5em;
+        width: 1.2em;
+        z-index: 12;
+        &:last-child {
+          width: 1.4em;
+          height: 51%;
+          padding-left: 9px;
+          border-left: solid 1px #dedede;
+        }
       }
     }
     ul {
@@ -859,16 +885,16 @@ const attachDarkStyleTransparentFilter = computed(() => {
       position: absolute;
       top: 0;
       bottom: 0;
-      right: 3em;
+      right: 5em;
       margin: auto;
-      width: 1em;
+      width: 1.5em;
       height: 2em;
       background: linear-gradient(90deg, hsla(0, 0%, 100%, 0), #fff);
       z-index: 12;
       pointer-events: none;
       transition: all 0.23s ease-in-out;
       @include mobile {
-        left: 136px;
+        left: 61.7px;
       }
     }
     #search:focus ~ .transparent_filter {
@@ -1063,7 +1089,7 @@ $balloon_border_color: #e2dedc;
     height: 40px;
     svg {
       position: absolute;
-      top: 10px;
+      top: 13px;
       bottom: auto;
       right: 13px;
     }
