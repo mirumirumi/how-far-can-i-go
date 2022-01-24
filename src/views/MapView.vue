@@ -379,16 +379,10 @@ const selectingGeocode = ref(false)
 const geocodeResults = ref<Array<any>>([])
 const isFormattedInput = ref(false)
 const isInputting = ref(false)
-const regexpCoords = /(\d+\.?(\d+)?) *,? *(\d+\.?(\d+)?)/gmi
+const regexpCoordsMaybe = /\d+/gmi
+const regexpCoords      = /(\d+\.?(\d+)?) *,? *(\d+\.?(\d+)?)/gmi
 
 watch(query, async (newQuery: string) => {
-  if (newQuery === "") {
-    isInputting.value      = false
-    isFormattedInput.value = false
-    selectingGeocode.value = false
-    return
-  }
-  if (newQuery === geoSelected) return
   if (newQuery.search(regexpCoords) !== -1) {
     center = {
       lat: parseFloat(newQuery.replace(regexpCoords, "$1")),
@@ -396,6 +390,14 @@ watch(query, async (newQuery: string) => {
     }
     return
   }
+  if (newQuery === "" || newQuery.search(regexpCoordsMaybe) !== -1) {
+    isInputting.value      = false
+    isFormattedInput.value = false
+    selectingGeocode.value = false
+    return
+  }
+  if (newQuery === geoSelected) return
+
   isInputting.value = true
   clearTimeout(timerID)
   timerID = setTimeout(geocode, 777)
