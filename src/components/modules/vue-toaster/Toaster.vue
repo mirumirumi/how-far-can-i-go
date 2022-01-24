@@ -213,13 +213,21 @@ export default {
   z-index: 9999;
   pointer-events: none;
 }
+@media screen and (max-width: 768px) {
+  .c-toast-container {
+    position: fixed !important;
+    padding: 0;
+    top: auto !important;
+    bottom: 85px;
+  }
+}
 .c-toast {
   display: flex;
   align-items: center;
-  margin: 0.5em 0;
+  margin: 0.5em 1em;
   padding: 0 1.3em;
   width: 33.3%;
-  min-width: 133px;
+  min-width: 300px;
   min-height: 39.5px;
   color: #fff;
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -239,6 +247,11 @@ export default {
     display: block;
     margin: 0.7em 0;
     width: calc(100% - 1.3em - 0.9em);
+  }
+}
+@media screen and (max-width: 768px) {
+  .c-toast {
+    align-self: center !important;
   }
 }
 .c-toast--info {
@@ -262,12 +275,6 @@ export default {
 }
 .c-toast-container--bottom {
   flex-direction: column-reverse;
-}
-@media screen and (max-width: 768px) {
-  .c-toast-container {
-    position: fixed !important;
-    padding: 0;
-  }
 }
 .c-toast--top, .c-toast--bottom {
   align-self: center;
