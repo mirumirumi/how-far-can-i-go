@@ -143,7 +143,7 @@ import { Loader } from "@googlemaps/js-api-loader"
 import { LatLng } from "@/utils/defines"
 import { darkStyle } from "@/utils/darkStyle"
 import { apiKeyGoogle, appId, apiKeyTT } from "@/secrets/secrets"
-import { tabindexToID, shouldDarkMode, getCountryDefaultPosition } from "@/utils/utils"
+import { round, tabindexToID, shouldDarkMode, getCountryDefaultPosition } from "@/utils/utils"
 import axios from "axios"
 import Cookies from "js-cookie"
 import MobileDetect from "mobile-detect"
@@ -242,7 +242,7 @@ loader.load().then(async (google) => {
       lng: e.latLng.lng(),
     }
     switchNewMarker()
-    query.value = `${ center.lat } ${ center.lng }`
+    query.value = `${ round(center.lat) } ${ round(center.lng) }`
     await getTimeMap()
     drawPolygon()
   })
@@ -267,7 +267,7 @@ loader.load().then(async (google) => {
       lat: marker.getPosition().lat(),
       lng: marker.getPosition().lng(),
     }
-    query.value = `${ center.lat } ${ center.lng }`
+    query.value = `${ round(center.lat) } ${ round(center.lng) }`
     await getTimeMap()
     drawPolygon()
   }
@@ -686,7 +686,7 @@ onMounted(async () => {
   }
 
   const tempLat = parseFloat(query.value.replace(regexpCoords, "$1"))
-  const tempLng = parseFloat(query.value.replace(regexpCoords, "$3")) 
+  const tempLng = parseFloat(query.value.replace(regexpCoords, "$3"))
 
   if (!isNaN(tempLat) && !isNaN(tempLng)) {
     center = {

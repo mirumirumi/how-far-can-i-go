@@ -1,5 +1,9 @@
 import { LatLng } from "./defines"
 
+export const round = ((value: number, base = 6): number => {
+  return Math.round(value * (10**base)) / (10**base)
+})
+
 export const shouldDarkMode = ((): boolean => {
   return (localStorage.getItem("theme") === "dark" ||
         ((localStorage.getItem("theme") === "os_sync") || (!localStorage.getItem("theme"))) && window.matchMedia("(prefers-color-scheme: dark)").matches)
