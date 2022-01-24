@@ -370,6 +370,7 @@ const regexpCoords = /(\d+\.?(\d+)?) *,? *(\d+\.?(\d+)?)/gmi
 
 watch(query, async (newQuery: string) => {
   if (newQuery === "") {
+    isInputting.value      = false
     isFormattedInput.value = false
     selectingGeocode.value = false
     return
