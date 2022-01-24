@@ -159,10 +159,23 @@ const toast: any = inject("toast")
  * initialize
  */
 onMounted(() => {
+  // init focus
   if (! (new MobileDetect(navigator.userAgent).mobile())) {
     (document.querySelector("#search") as HTMLElement).focus()
   }
+
+  // set locale
   locale.value = navigator.language
+
+  // // global key event detect (for search input)
+  // window.addEventListener("keydown", (e: any) => {
+  //   if (e.key === "/") {
+  //     e.preventDefault();
+  //     (document.querySelector("#search") as HTMLElement).focus()
+  //   } else {
+  //     return true
+  //   }
+  // })
 })
 
 /**
