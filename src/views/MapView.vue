@@ -7,7 +7,7 @@
         <SvgIcon icon="search" :color="isDarkCurrent ? '#fff' : '#d2d2d2'" @click="geocode" />
         <SvgIcon icon="close"  :color="isDarkCurrent ? '#fff' : '#d2d2d2'" @click="purgeQuery" />
       </div>
-      <ul v-show="selectingGeocode && !isInputting">
+      <ul v-show="selectingGeocode && !isInputting && geocodeResults.length !== 0">
         <!-- <li v-for="g, i in geocodeResults" @click="selectGeocode(i)" :key="g" @keydown="selectByKeys" :tabindex="301 + i" :id="`geo${ (301 + i).toString() }`">{{ makeReadableGeo(g.address_components) }}</li> -->
         <li v-for="g, i in geocodeResults" @click="selectGeocode(i)" :key="g" @keydown="selectByKeys" :tabindex="301 + i" :id="`geo${ (301 + i).toString() }`">{{ g.formatted_address.replace(/日本.*?\d{3}-\d{4} /gmi, "") }}</li>
       </ul>
