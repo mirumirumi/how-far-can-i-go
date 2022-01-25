@@ -1084,7 +1084,7 @@ $balloon_border_color: #e2dedc;
   top: 0;
   right: 0;
   width: 350px;
-  height: 100vh;
+  height: 100%;
   padding: 1em 3em;
   background-color: #ffffff;
   box-shadow: -3px 0 2.5px 0 rgba($color: #000000, $alpha: 0.23);
@@ -1132,6 +1132,7 @@ $balloon_border_color: #e2dedc;
           padding: 0 0 4px;
           border: none;
           border-bottom: solid 1.7px #e3e3e3;
+          border-radius: 0;
           background-color: transparent;
           color: #4e4e4e;
           font-size: 1.1em;
@@ -1236,7 +1237,8 @@ $balloon_border_color: #e2dedc;
             border-left-color: #ffffff;
           }
           @include mobile {
-            left: 16px;
+            left: 0;
+            right: 27.5px;
           }
         }
       }
