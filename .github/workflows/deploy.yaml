@@ -14,6 +14,9 @@ jobs:
         with:
           node-version: "14"
       - run: npm install
+      - name: gpg
+        run: |
+          echo ${{ secrets.GPG_PASSPHRASE }} | sudo gpg --batch --passphrase-fd 0 --decrypt .env.prd.gpg --output .env.prd 
       - run: npm run build-prd
       - name: prd deploy
         run: |
