@@ -541,7 +541,11 @@ function makeRequest(): any {
   result.departure_searches[0].id = "mirumi.me"
   result.departure_searches[0].coords.lat = center.lat
   result.departure_searches[0].coords.lng = center.lng
-  result.departure_searches[0].travel_time = Math.round(store.state.time * 60 * (store.state.walkingSpeed / 80))
+  if (store.state.transportation === "walking") {
+    result.departure_searches[0].travel_time = Math.round(store.state.time * 60 * (store.state.walkingSpeed / 80))
+  } else {
+    result.departure_searches[0].travel_time = Math.round(store.state.time * 60)
+  }
   result.departure_searches[0].transportation.type = store.state.transportation
   return result
 }
