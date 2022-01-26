@@ -16,7 +16,7 @@ jobs:
       - run: npm install
       - name: gpg
         run: |
-          echo "${{ secrets.GPG_PASSPHRASE }}" | sudo gpg --batch --passphrase-fd 0 --decrypt ".env.prd.gpg" --output ".env.prd" 
+          echo "${{ secrets.GPG_PASSPHRASE }}" | sudo gpg --batch --passphrase-fd 0 --output ".env.prd" --decrypt ".env.prd.gpg" 
       - run: npm run build-prd
       - name: prd deploy
         run: |
