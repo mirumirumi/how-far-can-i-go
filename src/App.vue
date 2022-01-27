@@ -1,13 +1,13 @@
 <template>
   <main class="view_wrap">
-    <Suspense>
+    <suspense>
       <template #default>
         <router-view/>
       </template>
       <template #fallback>
         <DefaultMapView />
       </template>
-    </Suspense>
+    </suspense>
   </main>
   <!-- <TheFooter></TheFooter> -->
 </template>
