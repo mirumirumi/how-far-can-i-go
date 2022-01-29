@@ -182,10 +182,10 @@ onMounted(() => {
 /**
  * timer
  */
-const requestCount = ref(0)
-setInterval(() => {
-  requestCount.value = 0
-}, 6000 * 10)  // 1min
+// const requestCount = ref(0)  // if a paid plan, probably don't need
+// setInterval(() => {
+//   requestCount.value = 0
+// }, 6000 * 10)  // 1min
 
 /**
  * maps
@@ -499,10 +499,10 @@ const isGettingTimeMap = ref(false)
 
 const getTimeMap = (async () => {
   if (query.value === "") return
-  if (10 <= requestCount.value) {
-    toast.error(t("toast.limit"))
-    return
-  }
+  // if (10 <= requestCount.value) {  // if a paid plan, probably don't need
+  //   toast.error(t("toast.limit"))
+  //   return
+  // }
   addQueryParameter("coords", `${ center.lat } ${ center.lng }`)
 
   isGettingTimeMap.value = true
@@ -521,17 +521,20 @@ const getTimeMap = (async () => {
   } catch (e: any) {
     console.log(e)
     if (e.response.status === 422) toast.error(t("toast.timemap_wrong_request"))
+    if (e.response.status === 429) toast.error(t("toast.limit_all"))
   }
   // console.log(res)
   try {
     paths = res?.data.results[0].shapes[0].shell
   } catch (e) {
-    console.log(e)
-    toast.error(t("toast.timemap_uncaught_error"))
+    // console.log(e)
+    toast.error(t("toast.timemap_no_shell"))
+    polygon.setMap(null)
+    paths = [{ lat: 0, lng: 0 }]
     isGettingTimeMap.value = false
     return
   }
-  requestCount.value += 1
+  // requestCount.value += 1  // if a paid plan, probably don't need
   isGettingTimeMap.value = false
   return
 })
