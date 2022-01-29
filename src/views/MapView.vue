@@ -521,6 +521,7 @@ const getTimeMap = (async () => {
   } catch (e: any) {
     console.log(e)
     if (e.response.status === 422) toast.error(t("toast.timemap_wrong_request"))
+    if (e.response.status === 429) toast.error(t("toast.limit_all"))
   }
   // console.log(res)
   try {

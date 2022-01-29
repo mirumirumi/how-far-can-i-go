@@ -2,6 +2,7 @@ export const messages = {
   ja: {
     toast: {
       limit: "現在、1分あたりのリクエスト数は10回に制限されています。",
+      limit_all: "1分あたりのリクエスト制限（利用ユーザー全体）に達しました。",
       failedGetLocation: "現在地を取得できませんでした…。",
       reason0: "原因は不明です。",
       reason1: "位置情報の取得が許可されていませんでした。",
@@ -15,6 +16,7 @@ export const messages = {
   en: {
     toast: {
       limit: "Currently, the number of requests per minute is limited to 10.",
+      limit_all: "The request limit per minute (for all users) has been reached.",
       failedGetLocation: "Failed to get current location.",
       reason0: "The cause is unknown.",
       reason1: "The cause is that location info acquisition was not allowed.",
