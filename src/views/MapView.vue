@@ -182,10 +182,10 @@ onMounted(() => {
 /**
  * timer
  */
-const requestCount = ref(0)
-setInterval(() => {
-  requestCount.value = 0
-}, 6000 * 10)  // 1min
+// const requestCount = ref(0)  // if a paid plan, probably don't need
+// setInterval(() => {
+//   requestCount.value = 0
+// }, 6000 * 10)  // 1min
 
 /**
  * maps
@@ -499,10 +499,10 @@ const isGettingTimeMap = ref(false)
 
 const getTimeMap = (async () => {
   if (query.value === "") return
-  if (10 <= requestCount.value) {
-    toast.error(t("toast.limit"))
-    return
-  }
+  // if (10 <= requestCount.value) {  // if a paid plan, probably don't need
+  //   toast.error(t("toast.limit"))
+  //   return
+  // }
   addQueryParameter("coords", `${ center.lat } ${ center.lng }`)
 
   isGettingTimeMap.value = true
@@ -531,7 +531,7 @@ const getTimeMap = (async () => {
     isGettingTimeMap.value = false
     return
   }
-  requestCount.value += 1
+  // requestCount.value += 1  // if a paid plan, probably don't need
   isGettingTimeMap.value = false
   return
 })
