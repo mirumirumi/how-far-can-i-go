@@ -527,8 +527,10 @@ const getTimeMap = (async () => {
   try {
     paths = res?.data.results[0].shapes[0].shell
   } catch (e) {
-    console.log(e)
-    toast.error(t("toast.timemap_uncaught_error"))
+    // console.log(e)
+    toast.error(t("toast.timemap_no_shell"))
+    polygon.setMap(null)
+    paths = [{ lat: 0, lng: 0 }]
     isGettingTimeMap.value = false
     return
   }
