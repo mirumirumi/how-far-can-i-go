@@ -225,8 +225,8 @@ export default {
   display: flex;
   align-items: center;
   margin: 0.5em 1em;
-  padding: 0 1.3em;
-  width: 33.3%;
+  padding: 0.1em 1.3em 0;
+  width: 37%;
   min-width: 300px;
   min-height: 39.5px;
   color: #fff;
@@ -247,11 +247,13 @@ export default {
     display: block;
     margin: 0.7em 0;
     width: calc(100% - 1.3em - 0.9em);
+    line-height: 1.4;
   }
 }
 @media screen and (max-width: 768px) {
   .c-toast {
     align-self: center !important;
+    padding: 0.1em 1em 0;
   }
 }
 .c-toast--info {
