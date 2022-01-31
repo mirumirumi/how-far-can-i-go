@@ -956,6 +956,7 @@ const attachDarkStyleTransparentFilter = computed(() => {
     right: 0;
     margin: 0;
     button {
+      margin: 0;
       padding: 0 10px 0 0;
       min-width: 60px;
       background-color: #fff;
