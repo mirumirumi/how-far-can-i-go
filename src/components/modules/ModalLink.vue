@@ -57,6 +57,10 @@ if (p.link === "privacy") {
       font-weight: bold;
       text-align: center;
     }
+    @include mobile {
+      width: 95%;
+      padding: 1.3em 1.3em 1.3em 2.3em;
+    }
   }
   .modal_back {
     position: absolute;
