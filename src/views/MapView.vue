@@ -103,16 +103,22 @@
           </div>
           <div class="setting_content">
             <div class="radio_set">
-              <input type="radio" id="light" value="light" name="theme" @change="selectTheme" v-model="themeChecked" :checked="themeChecked === `light`">
-              <label for="light">Light</label>
+              <label for="light">
+                <input type="radio" id="light" value="light" name="theme" @change="selectTheme" v-model="themeChecked" :checked="themeChecked === `light`">
+                Light
+              </label>
             </div>
             <div class="radio_set">
-              <input type="radio" id="dark" value="dark" name="theme" @change="selectTheme" v-model="themeChecked" :checked="themeChecked === `dark`">
-              <label for="dark">Dark</label>
+              <label for="dark">
+                <input type="radio" id="dark" value="dark" name="theme" @change="selectTheme" v-model="themeChecked" :checked="themeChecked === `dark`">
+                Dark
+              </label>
             </div>
             <div class="radio_set">
-              <input type="radio" id="os_sync" value="os_sync" name="theme" @change="selectTheme" v-model="themeChecked" :checked="themeChecked === `os_sync`">
-              <label for="os_sync">OS Sync</label>
+              <label for="os_sync">
+                <input type="radio" id="os_sync" value="os_sync" name="theme" @change="selectTheme" v-model="themeChecked" :checked="themeChecked === `os_sync`">
+                OS Sync
+              </label>
             </div>
           </div>
         </div>
@@ -1178,6 +1184,7 @@ $balloon_border_color: #e2dedc;
             appearance: none;
             outline: 0;
             transition: 0.13s all ease;
+            cursor: pointer;
             &:checked {
               border-color: $primary;
               background-color: $primary;
@@ -1189,6 +1196,7 @@ $balloon_border_color: #e2dedc;
           }
           label {
             line-height: 1.7;
+            cursor: pointer;
           }
         }
         .help_balloon {
