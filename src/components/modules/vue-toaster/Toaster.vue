@@ -252,6 +252,7 @@ export default {
     margin: 0.7em 0;
     width: calc(100% - 1.3em - 0.9em);
     line-height: 1.4;
+    font-family: "Open Sans", sans-serif;
   }
 }
 @media screen and (max-width: 768px) {
