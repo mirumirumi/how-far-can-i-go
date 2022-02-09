@@ -3,10 +3,10 @@ export const messages = {
     toast: {
       limit: "現在、1分あたりのリクエスト数は10回に制限されています。",
       limit_all: "1分あたりのリクエスト制限（利用ユーザー全体）に達しました。",
-      failedGetLocation: "現在地を取得できませんでした…。",
+      failedGetLocation: "現在地を取得できませんでした。",
       reason0: "原因は不明です。",
       reason1: "位置情報の取得が許可されていませんでした。",
-      reason2: "精確な情報を取得できませんでした。",
+      reason2: "正確な情報を取得できませんでした。",
       reason3: "タイムアウトエラーです。",
       notSupportGetLocation: "お使いのデバイスでは現在地の取得ができませんでした。",
       timemap_no_shell: "移動可能範囲が見つかりませんでした。",
