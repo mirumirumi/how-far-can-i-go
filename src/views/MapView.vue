@@ -149,7 +149,7 @@ import { Loader } from "@googlemaps/js-api-loader"
 import { LatLng } from "@/utils/defines"
 import { darkStyle } from "@/utils/darkStyle"
 import { apiKeyGoogle, appId, apiKeyTT } from "@/secrets/secrets"
-import { round, tabindexToID, shouldDarkMode, getCountryDefaultPosition } from "@/utils/utils"
+import { round, tabindexToID, shouldDarkMode, getCountryDefaultPosition, delay } from "@/utils/utils"
 import axios from "axios"
 import Cookies from "js-cookie"
 import MobileDetect from "mobile-detect"
@@ -447,13 +447,37 @@ const geocode = (async () => {
     console.log(e)
   }
   // console.log(res?.data)
+
   selectingGeocode.value = true
   isOpenBackForGeo.value = true
+
+  if (query.value == "任天堂") {
+    geocodeResults.value.push({
+      formatted_address: "日本、〒601-8035 京都府京都市南区東九条南松田町２−１",
+      geometry: {
+          location: {
+              lat: 34.972418,
+              lng: 135.7544454
+          },
+      },
+    })
+
+    isInputting.value = false
+    return
+  }
+
+  if (res?.data.results.length === 0) {
+    toast.error("検索結果がありません。施設名ではなく住所表記での入力をお試しください。")
+    // geocodeResults.value.push({formatted_address: "検索結果がありません。施設名ではなく住所表記での入力をお試しください。"})
+    isInputting.value = false
+    return
+  }
+
   res?.data.results.forEach((r: any) => {
     geocodeResults.value.push(r)
   })
+
   isInputting.value = false
-  return
 })
 
 const selectGeocode = (async (index: number) => {
