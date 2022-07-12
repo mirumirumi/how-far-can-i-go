@@ -329,7 +329,7 @@ function getUserCurrentPosition(): Promise<LatLng> {
       //     break
       // }
       if (Cookies.get("getCurrentPositionResult") === undefined) {
-        toast.info(msg)
+        // toast.info(msg)
       }
       Cookies.set("getCurrentPositionResult", "error", { expires: 365 })
       resolve(getCountryDefaultPosition())
