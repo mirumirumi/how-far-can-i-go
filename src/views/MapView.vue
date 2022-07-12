@@ -149,7 +149,7 @@ import { Loader } from "@googlemaps/js-api-loader"
 import { LatLng } from "@/utils/defines"
 import { darkStyle } from "@/utils/darkStyle"
 import { apiKeyGoogle, appId, apiKeyTT } from "@/secrets/secrets"
-import { round, tabindexToID, shouldDarkMode, getCountryDefaultPosition, delay } from "@/utils/utils"
+import { round, tabindexToID, shouldDarkMode, getCountryDefaultPosition } from "@/utils/utils"
 import axios from "axios"
 import Cookies from "js-cookie"
 import MobileDetect from "mobile-detect"
@@ -468,7 +468,6 @@ const geocode = (async () => {
 
   if (res?.data.results.length === 0) {
     toast.error("検索結果がありません。施設名ではなく住所表記での入力をお試しください。")
-    // geocodeResults.value.push({formatted_address: "検索結果がありません。施設名ではなく住所表記での入力をお試しください。"})
     isInputting.value = false
     return
   }
@@ -509,13 +508,13 @@ function makeBoundsFitted(): any {
   return result
 }
 
-const makeReadableGeo = ((address_components: Array<any>): string => {
-  let names = ""
-  for (let i = 5; 1 <= i; i--) {
-    if (address_components[i] !== undefined) names += address_components[i].short_name.replace(/JP/gmi, "")
-  }
-  return `${ address_components[0].short_name } : ${ names === "" ? "日本" : names }`
-})
+// const makeReadableGeo = ((address_components: Array<any>): string => {
+//   let names = ""
+//   for (let i = 5; 1 <= i; i--) {
+//     if (address_components[i] !== undefined) names += address_components[i].short_name.replace(/JP/gmi, "")
+//   }
+//   return `${ address_components[0].short_name } : ${ names === "" ? "日本" : names }`
+// })
 
 const purgeQuery = (() => {
   query.value = "";
