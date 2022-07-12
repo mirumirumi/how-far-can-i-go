@@ -7,6 +7,6 @@ module.exports = {
     },
   },
   publicPath: process.env.NODE_ENV === "prd"
-    ? "/walking-map"
+    ? "/apps/how-far-map"
     : "/",
 }
