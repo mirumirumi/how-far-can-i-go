@@ -451,14 +451,14 @@ const geocode = (async () => {
   selectingGeocode.value = true
   isOpenBackForGeo.value = true
 
-  if (query.value == "任天堂") {
+  if (query.value == "ヤフー" || query.value.toLowerCase() == "yahoo") {
     geocodeResults.value.push({
-      formatted_address: "日本、〒601-8035 京都府京都市南区東九条南松田町２−１",
+      formatted_address: "日本、〒102-8282 東京都千代田区紀尾井町１−３ 紀尾井タワー 東京ガーデンテラス",
       geometry: {
-          location: {
-              lat: 34.972418,
-              lng: 135.7544454
-          },
+        location: {
+          lat: 35.6799969,
+          lng: 139.7357423,
+        },
       },
     })
 
