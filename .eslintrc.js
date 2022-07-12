@@ -20,6 +20,12 @@ module.exports = {
   },
   rules: {
     'no-console': process.env.NODE_ENV === 'prd' ? 'warn' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'prd' ? 'warn' : 'off'
+    'no-debugger': process.env.NODE_ENV === 'prd' ? 'warn' : 'off',
+    "no-useless-escape": 0,
+    "no-irregular-whitespace": 0,
+    "@typescript-eslint/no-extra-semi": 0,
+    "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/no-var-requires": 0,
+    "@typescript-eslint/no-non-null-assertion": 0,
   }
 }

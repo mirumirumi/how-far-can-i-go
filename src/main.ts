@@ -22,7 +22,7 @@ const app = createApp(App)
   .use(VueAxios, axios)
 
 app.use(Toaster, {
-  position: "top-right",
+  position: "bottom-left",
   duration: 5555,
 }).provide('toast', app.config.globalProperties.$toast)
 
