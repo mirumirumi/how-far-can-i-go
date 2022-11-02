@@ -208,11 +208,6 @@ const loader = new Loader({
 
 loader.load().then(async (google) => {
   // suppress larger volume of requets
-  const { data: ip } = await axios.get("https://ipinfo.io/json?token=c1412db4f9b238")
-  const savedIp = Cookies.get("savedIp")
-  if (savedIp == undefined || ip !== savedIp) {
-    Cookies.set("savedIp", ip)
-  }
   const requestNumMap = Cookies.get("requestNumMap") ?? "0"
   if (requestNumMap != undefined) {
     Cookies.set("requestNumMap", (Number(requestNumMap) + 1).toString(), { expires: 1 })
