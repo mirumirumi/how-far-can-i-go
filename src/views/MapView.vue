@@ -784,44 +784,44 @@ onMounted(() => {
  * dark mode styles
  */
 const inlineStyleUI = {
-  'color': "#ffffff",
-  'background-color': "#5b5651 !important",
-  'border-color': "#433e35 !important",
-  'box-shadow': "1px 1px 2px 0px rgba(158, 124, 92, 0.19) !important",
+  "color": "#ffffff",
+  "background-color": "#5b5651 !important",
+  "border-color": "#433e35 !important",
+  "box-shadow": "1px 1px 2px 0px rgba(158, 124, 92, 0.19) !important",
 }
 const attachDarkStyleUI = computed(() => {
   if (isDarkCurrent.value) return inlineStyleUI; return {}
 })
 const inlineStylePrimaryButton = {
-  'background-color': "#d35d33 !important",
-  'border-color': "#d35d33 !important",
+  "background-color": "#d35d33 !important",
+  "border-color": "#d35d33 !important",
 }
 const attachDarkStylePrimaryButton = computed(() => {
   if (isDarkCurrent.value) return inlineStylePrimaryButton; return {}
 })
 const inlineStyleDownArrow = {
-  'background-image': "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 17'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e\") !important",
+  "background-image": "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 17'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e\") !important",
 }
 const attachDarkStyleDownArrow = computed(() => {
   if (isDarkCurrent.value) return inlineStyleDownArrow; return {}
 })
-const inlineStyleText = { 'color': "#ffffff" }
+const inlineStyleText = { "color": "#ffffff" }
 const attachDarkStyleText = computed(() => {
   if (isDarkCurrent.value) return inlineStyleText; return {}
 })
-const inlineStyleHelp = { 'background-color': "#3d3935 !important" }
+const inlineStyleHelp = { "background-color": "#3d3935 !important" }
 const attachDarkStyleHelp = computed(() => {
   if (isDarkCurrent.value) return inlineStyleHelp; return {}
 })
-const inlineStyleDisplayNone = { 'display': "none !important" }
+const inlineStyleDisplayNone = { "display": "none !important" }
 const attachDarkStyleDisplayNone = computed(() => {
   if (isDarkCurrent.value) return inlineStyleDisplayNone; return {}
 })
-const inlineStyleHelpPseudo = { 'border-left-color': "#3d3935 !important" }
+const inlineStyleHelpPseudo = { "border-left-color": "#3d3935 !important" }
 const attachDarkStylePseudo = computed(() => {
   if (isDarkCurrent.value) return inlineStyleHelpPseudo; return {}
 })
-const inlineStyleTransparentFilter = { 'background': "linear-gradient(90deg, rgba(91, 86, 81, 0), #5b5651) !important" }
+const inlineStyleTransparentFilter = { "background": "linear-gradient(90deg, rgba(91, 86, 81, 0), #5b5651) !important" }
 const attachDarkStyleTransparentFilter = computed(() => {
   if (isDarkCurrent.value) return inlineStyleTransparentFilter; return {}
 })
