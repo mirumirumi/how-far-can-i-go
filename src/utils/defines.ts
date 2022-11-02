@@ -1,3 +1,6 @@
+export const MAX_LOAD_MAP_LIMIT = 63
+export const MAX_GEOCODE_LIMIT  = 21
+
 export interface LatLng {
   lat: number,
   lng: number,
