@@ -1,6 +1,6 @@
-import { InjectionKey } from 'vue'
-import { createStore, Store, useStore as baseUseStore } from 'vuex'
-import { Transportation } from '@/utils/defines'
+import { InjectionKey } from "vue"
+import { createStore, Store, useStore as baseUseStore } from "vuex"
+import { Transportation } from "@/utils/defines"
 
 export interface State {
   query: string,

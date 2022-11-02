@@ -142,13 +142,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, onMounted, ref, watch } from "vue"
+import { computed, onMounted, ref, watch } from "vue"
 import { useStore } from "@/store"
 import { useI18n } from "vue-i18n"
 import { Loader } from "@googlemaps/js-api-loader"
-import { LatLng } from "@/utils/defines"
+import { useToast } from "vue-toastification"
 import { darkStyle } from "@/utils/darkStyle"
 import { apiKeyGoogle, appId, apiKeyTT } from "@/secrets/secrets"
+import { MAX_LOAD_MAP_LIMIT, MAX_GEOCODE_LIMIT, LatLng } from "@/utils/defines"
 import { round, tabindexToID, shouldDarkMode, getCountryDefaultPosition } from "@/utils/utils"
 import axios from "axios"
 import Cookies from "js-cookie"
@@ -161,13 +162,13 @@ import LoadingBack from "@/components/modules/LoadingBack.vue"
 import TransparentBack from "@/components/modules/TransparentBack.vue"
 
 const store = useStore()
+const toast = useToast()
 const { t, locale } = useI18n({ useScope: "global" })
-const toast: any = inject("toast")
 
 /**
  * initialize
  */
-onMounted(() => {
+onMounted(async () => {
   // init focus
   if (! (new MobileDetect(navigator.userAgent).mobile())) {
     (document.querySelector("#search") as HTMLElement).focus()
@@ -206,6 +207,22 @@ const loader = new Loader({
 })
 
 loader.load().then(async (google) => {
+  // suppress larger volume of requets
+  const { data: ip } = await axios.get("https://ipinfo.io/json?token=c1412db4f9b238")
+  const savedIp = Cookies.get("savedIp")
+  if (savedIp == undefined || ip !== savedIp) {
+    Cookies.set("savedIp", ip)
+  }
+  const requestNumMap = Cookies.get("requestNumMap") ?? "0"
+  if (requestNumMap != undefined) {
+    Cookies.set("requestNumMap", (Number(requestNumMap) + 1).toString(), { expires: 1 })
+  }
+  if (MAX_LOAD_MAP_LIMIT <= Number(Cookies.get("requestNumMap"))) {
+    toast.error(t("toast.map_limit"))
+    ; (document.getElementById("map") as HTMLDivElement).style.backgroundColor = "#bbbbbb"
+    return
+  }
+
   map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
     center:            center,
     zoom:              15,
@@ -439,6 +456,18 @@ const geocode = (async () => {
     execWhenQueryIsCoords()
     return
   }
+
+  // suppress larger volume of requets
+  const requestNumGeocode = Cookies.get("requestNumGeocode") ?? "0"
+  if (requestNumGeocode != undefined) {
+    Cookies.set("requestNumGeocode", (Number(requestNumGeocode) + 1).toString(), { expires: 1 })
+  }
+  if (MAX_GEOCODE_LIMIT <= Number(Cookies.get("requestNumGeocode"))) {
+    toast.error(t("toast.geocode_limit"))
+    isInputting.value = false
+    return
+  }
+
   geocodeResults.value.splice(0)
   let res = null
   try {
@@ -450,21 +479,6 @@ const geocode = (async () => {
 
   selectingGeocode.value = true
   isOpenBackForGeo.value = true
-
-  if (query.value == "ヤフー" || query.value.toLowerCase() == "yahoo") {
-    geocodeResults.value.push({
-      formatted_address: "日本、〒102-8282 東京都千代田区紀尾井町１−３ 紀尾井タワー 東京ガーデンテラス",
-      geometry: {
-        location: {
-          lat: 35.6799969,
-          lng: 139.7357423,
-        },
-      },
-    })
-
-    isInputting.value = false
-    return
-  }
 
   if (res?.data.results.length === 0) {
     toast.error("検索結果がありません。施設名ではなく住所表記での入力をお試しください。")
@@ -784,44 +798,44 @@ onMounted(() => {
  * dark mode styles
  */
 const inlineStyleUI = {
-  'color': "#ffffff",
-  'background-color': "#5b5651 !important",
-  'border-color': "#433e35 !important",
-  'box-shadow': "1px 1px 2px 0px rgba(158, 124, 92, 0.19) !important",
+  "color": "#ffffff",
+  "background-color": "#5b5651 !important",
+  "border-color": "#433e35 !important",
+  "box-shadow": "1px 1px 2px 0px rgba(158, 124, 92, 0.19) !important",
 }
 const attachDarkStyleUI = computed(() => {
   if (isDarkCurrent.value) return inlineStyleUI; return {}
 })
 const inlineStylePrimaryButton = {
-  'background-color': "#d35d33 !important",
-  'border-color': "#d35d33 !important",
+  "background-color": "#d35d33 !important",
+  "border-color": "#d35d33 !important",
 }
 const attachDarkStylePrimaryButton = computed(() => {
   if (isDarkCurrent.value) return inlineStylePrimaryButton; return {}
 })
 const inlineStyleDownArrow = {
-  'background-image': "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 17'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e\") !important",
+  "background-image": "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 17'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e\") !important",
 }
 const attachDarkStyleDownArrow = computed(() => {
   if (isDarkCurrent.value) return inlineStyleDownArrow; return {}
 })
-const inlineStyleText = { 'color': "#ffffff" }
+const inlineStyleText = { "color": "#ffffff" }
 const attachDarkStyleText = computed(() => {
   if (isDarkCurrent.value) return inlineStyleText; return {}
 })
-const inlineStyleHelp = { 'background-color': "#3d3935 !important" }
+const inlineStyleHelp = { "background-color": "#3d3935 !important" }
 const attachDarkStyleHelp = computed(() => {
   if (isDarkCurrent.value) return inlineStyleHelp; return {}
 })
-const inlineStyleDisplayNone = { 'display': "none !important" }
+const inlineStyleDisplayNone = { "display": "none !important" }
 const attachDarkStyleDisplayNone = computed(() => {
   if (isDarkCurrent.value) return inlineStyleDisplayNone; return {}
 })
-const inlineStyleHelpPseudo = { 'border-left-color': "#3d3935 !important" }
+const inlineStyleHelpPseudo = { "border-left-color": "#3d3935 !important" }
 const attachDarkStylePseudo = computed(() => {
   if (isDarkCurrent.value) return inlineStyleHelpPseudo; return {}
 })
-const inlineStyleTransparentFilter = { 'background': "linear-gradient(90deg, rgba(91, 86, 81, 0), #5b5651) !important" }
+const inlineStyleTransparentFilter = { "background": "linear-gradient(90deg, rgba(91, 86, 81, 0), #5b5651) !important" }
 const attachDarkStyleTransparentFilter = computed(() => {
   if (isDarkCurrent.value) return inlineStyleTransparentFilter; return {}
 })

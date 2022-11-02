@@ -1,8 +1,10 @@
 export const messages = {
   ja: {
     toast: {
-      limit: "現在、1分あたりのリクエスト数は10回に制限されています。",
-      limit_all: "1分あたりのリクエスト制限（利用ユーザー全体）に達しました。",
+      limit: "現在、1 分あたりのリクエスト数は10回に制限されています。",
+      limit_all: "1 分あたりのリクエスト制限（利用ユーザー全体）に達しました。",
+      map_limit: "1 ユーザーあたりの地図の読み込み回数には制限があります。また明日どうぞ。",
+      geocode_limit: "1 ユーザーあたりのキーワード検索回数には制限があります。また明日どうぞ。",
       failedGetLocation: "現在地を取得できませんでした。",
       reason0: "原因は不明です。",
       reason1: "位置情報の取得が許可されていませんでした。",
@@ -17,6 +19,8 @@ export const messages = {
     toast: {
       limit: "Currently, the number of requests per minute is limited to 10.",
       limit_all: "The request limit per minute (for all users) has been reached.",
+      map_limit: "There is a limit to load the map per user. Please come back tomorrow.",
+      geocode_limit: "There is a limit to serach with keywords per user. Please come back tomorrow.",
       failedGetLocation: "Failed to get current location.",
       reason0: "The cause is unknown.",
       reason1: "The cause is that location info acquisition was not allowed.",

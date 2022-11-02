@@ -1,9 +1,9 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router"
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
-    name: 'MapView',
+    path: "/",
+    name: "MapView",
     component: () => import("../views/MapView.vue"),
   },
 ]
