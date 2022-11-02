@@ -1,0 +1,68 @@
+.Vue-Toastification__toast {
+  display: flex;
+  align-content: center;
+  min-width: auto;
+  min-height: 1em;
+  padding: 0.8em 1.1em 0.8em 1.3em;
+  border-radius: 5px;
+  box-shadow: 2px 2px 3px 1px rgb(0 0 0 / 13%);
+}
+.Vue-Toastification__toast--info {
+  color: #8C8E90;
+  background-color: #F3F7F8;
+}
+.Vue-Toastification__toast--success {
+  color: #479F63;
+  background-color: #E3F4E9;
+}
+.Vue-Toastification__toast--warning {
+  color: #B2B07F;
+  background-color: #F4F4E6;
+}
+.Vue-Toastification__toast--error {
+  color: #c07171;
+  background-color: #F7EAED;
+}
+.Vue-Toastification__close-button {
+  padding-left: 0.6em;
+}
+.Vue-Toastification__toast--info .Vue-Toastification__close-button {
+  color: #A1A4A7;
+}
+.Vue-Toastification__toast--success .Vue-Toastification__close-button {
+  color: #479F63;
+}
+.Vue-Toastification__toast--warning .Vue-Toastification__close-button {
+  color: #B2B07F;
+}
+.Vue-Toastification__toast--error .Vue-Toastification__close-button {
+  color: #CA8787;
+}
+@keyframes fadeInUp {
+  from {
+    opacity: 0.5;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fadeOutDown {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+.original_fade-enter-active {
+  animation: fadeInUp 111ms ease both;
+}
+.original_fade-leave-active {
+  animation: fadeOutDown 133ms ease-in-out both;
+}
+.original_fade-move {
+  transition: all 333ms ease;
+}

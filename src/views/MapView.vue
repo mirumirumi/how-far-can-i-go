@@ -142,11 +142,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, onMounted, ref, watch } from "vue"
+import { computed, onMounted, ref, watch } from "vue"
 import { useStore } from "@/store"
 import { useI18n } from "vue-i18n"
 import { Loader } from "@googlemaps/js-api-loader"
 import { LatLng } from "@/utils/defines"
+import { useToast } from "vue-toastification"
 import { darkStyle } from "@/utils/darkStyle"
 import { apiKeyGoogle, appId, apiKeyTT } from "@/secrets/secrets"
 import { round, tabindexToID, shouldDarkMode, getCountryDefaultPosition } from "@/utils/utils"
@@ -161,8 +162,8 @@ import LoadingBack from "@/components/modules/LoadingBack.vue"
 import TransparentBack from "@/components/modules/TransparentBack.vue"
 
 const store = useStore()
+const toast = useToast()
 const { t, locale } = useI18n({ useScope: "global" })
-const toast: any = inject("toast")
 
 /**
  * initialize
