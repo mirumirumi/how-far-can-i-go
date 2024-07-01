@@ -25,6 +25,6 @@ jobs:
           echo "${{ secrets.CONOHA_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-          ssh -oStrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.CONOHA_USERNAME }}@${{ secrets.CONOHA_HOST }} -p ${{ secrets.CONOHA_PORT }} rm -r public_html/mirumi.me/apps/how-far-map/*
+          ssh -oStrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.CONOHA_USERNAME }}@${{ secrets.CONOHA_HOST }} -p ${{ secrets.CONOHA_PORT }} rm -rf public_html/mirumi.in/apps/how-far-map/*
           ls -lha dist/
           scp -r -i ~/.ssh/id_rsa -P ${{ secrets.CONOHA_PORT }} dist/* ${{ secrets.CONOHA_USERNAME }}@${{ secrets.CONOHA_HOST }}:public_html/mirumi.me/apps/how-far-map/
